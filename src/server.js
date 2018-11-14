@@ -5,7 +5,7 @@ const express = require('express');
 const http = require('http');
 const bodyparser = require('body-parser');
 const glob = require('glob');
-const { config, logger } = global.__SYNTRESS__;
+const { config, logger } = global.__CENTRESS__;
 
 module.exports = () => {
 

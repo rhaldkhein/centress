@@ -5,7 +5,7 @@ module.exports = config => {
   /**
    * Own global namespace.
    */
-  global.__SYNTRESS__ = {};
+  global.__CENTRESS__ = {};
 
   /**
    * Use bluebird as default promise.

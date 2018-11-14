@@ -23,8 +23,8 @@ exports.boot = (userConfig) => {
   const Logger = exports.logger = require('./libs/logger');
   Logger.init(config.log4js);
 
-  global.__SYNTRESS__.config = config;
-  global.__SYNTRESS__.logger = Logger;
+  global.__CENTRESS__.config = config;
+  global.__CENTRESS__.logger = Logger;
 
   exports.lib = require('./libs');
 

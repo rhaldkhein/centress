@@ -4,23 +4,23 @@ A modular monolith framework with express and mongoose and more.
 
 ### File Structure
 ```
-project
-│── node_modules   
-└── routes
+project/
+│── node_modules/
+└── routes/
 │   │── index.js
 │   └── other.js
-└── services
-│   │── security
+└── services/
+│   │── security/
 │   │   │── index.js
 │   │   │── init.js
 │   │   │── routes.js
 │   │   └── other.js
-│   └── user
+│   └── user/
 │   │   │── index.js
 │   │   │── init.js
 │   │   │── routes.js
 │   │   └── other.js
-│   └── other
+│   └── other/
 │── pacakge.json
 └── start.js
 ```

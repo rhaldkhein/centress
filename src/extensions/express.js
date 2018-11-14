@@ -1,6 +1,6 @@
 'use strict';
 
-const { config } = global.__SYNTRESS__;
+const { config } = global.__CENTRESS__;
 const express = require('express');
 const prodErrorMessage = 'Error occured. Please see server logs.';
 

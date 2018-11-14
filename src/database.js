@@ -2,7 +2,7 @@
 
 const _isEmpty = require('lodash/isEmpty');
 const mongoose = require('mongoose');
-const { config, logger } = global.__SYNTRESS__;
+const { config, logger } = global.__CENTRESS__;
 
 function validateOnUpdate(schema) {
 
