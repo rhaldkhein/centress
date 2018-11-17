@@ -7,6 +7,7 @@ require('./path')(config);
 require('./system')(config);
 require('./server')(config);
 require('./database')(config);
+
 require('./vendors/express')(config);
 require('./vendors/mongoose')(config);
 require('./vendors/log4js')(config);

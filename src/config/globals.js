@@ -9,8 +9,8 @@ module.exports = config => {
 
   /**
    * Use bluebird as default promise.
-   * Warnings are disable by default,
-   * but enabled on development mdoe.
+   * With bluebird, Warnings are disable by default,
+   * but enabled on development mode.
    */
   global.Promise = require('bluebird');
 

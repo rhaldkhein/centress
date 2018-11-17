@@ -15,4 +15,3 @@ function validate(...validations) {
 }
 
 module.exports = { validate, param, query, body };
-

@@ -7,10 +7,10 @@ module.exports = config => {
   // Outer Root
   config.path.root = null;
 
-  // Routes
+  // Routes, master will set if not specified
   config.path.routes = null;
 
-  // Services
-  config.path.services = null;
+  // Modules, master will set if not specified
+  config.path.modules = null;
 
 };

@@ -9,7 +9,7 @@ project/
 └── routes/
 │   │── index.js
 │   └── other.js
-└── services/
+└── modules/
 │   │── security/
 │   │   │── index.js
 │   │   │── init.js

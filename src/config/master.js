@@ -17,7 +17,7 @@ module.exports = userConfig => {
     // Path
     path: {
       routes: userConfig.path.root + '/routes',
-      services: userConfig.path.root + '/services'
+      modules: userConfig.path.root + '/modules'
     },
 
     // Server

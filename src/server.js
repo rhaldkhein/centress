@@ -5,6 +5,7 @@ const express = require('express');
 const http = require('http');
 const bodyparser = require('body-parser');
 const glob = require('glob');
+const _module = require('./module');
 const { config, logger } = global.__CENTRESS__;
 
 module.exports = () => {
@@ -27,17 +28,23 @@ module.exports = () => {
 
   // Paths
   let pathRoutes = config.path.routes;
-  let pathServices = config.path.services;
+  let pathModules = config.path.modules;
 
-  // Initiate startup services
-  if (pathServices) {
-    glob.sync('*/init.js', { cwd: pathServices })
+  /**
+   * Initialize startup modules
+   */
+
+  if (pathModules) {
+    glob.sync('*/init.js', { cwd: pathModules })
       .forEach(filename => {
-        require(pathServices + '/' + filename)(app, server);
+        require(pathModules + '/' + filename)(app, server);
       });
   }
 
-  // Important routes
+  /**
+   * Important routes
+   */
+
   if (pathRoutes) {
     const importantRouter = express.Router();
     glob.sync('**/_*.js', { cwd: pathRoutes })
@@ -51,24 +58,31 @@ module.exports = () => {
       });
   }
 
-  // Services routes
-  if (pathServices) {
-    let serviceRoutes = [];
-    const apiRouter = express.Router();
-    glob.sync('*/routes.js', { cwd: pathServices })
+  /**
+   * Modules routes
+   */
+
+  const baseRouter = express.Router();
+  if (pathModules) {
+    let moduleRoutes = [];
+    glob.sync('*/routes.js', { cwd: pathModules })
       .forEach(filename => {
-        let route = require(pathServices + '/' + filename);
+        let route = require(pathModules + '/' + filename);
         if (!route.prefix) route.prefix = filename.split('/')[0];
-        serviceRoutes.push(route);
+        moduleRoutes.push(route);
       });
-    _.sortBy(serviceRoutes, ['index']).forEach(route => {
-      const serviceRouter = express.Router();
-      // Pass the router for service only and global router
-      route(serviceRouter, apiRouter);
-      app.use(baseUrl + '/' + route.prefix, serviceRouter);
+    _.sortBy(moduleRoutes, ['index']).forEach(route => {
+      const moduleRouter = express.Router();
+      // Pass the router for module only and global router
+      route(moduleRouter, baseRouter);
+      app.use(baseUrl + '/' + route.prefix, moduleRouter);
     });
-    app.use(baseUrl, apiRouter);
+    app.use(baseUrl, baseRouter);
   }
+
+  /**
+   * Static files
+   */
 
   // Serve static files before ending routes
   let expressStatics = config.express.statics;
@@ -76,7 +90,10 @@ module.exports = () => {
     app.use(express.static(elem.path, elem.options));
   });
 
-  // Ending routes
+  /**
+   * Ending routes
+   */
+
   if (pathRoutes) {
     const endingRouter = express.Router();
     glob.sync('**/[^_]*.js', { cwd: pathRoutes })
@@ -88,7 +105,9 @@ module.exports = () => {
       });
   }
 
-  // Listen
+  /**
+   * Listen server
+   */
   let listen = new Promise((resolve, reject) => {
     let port = config.server.port;
     let host = config.server.host;

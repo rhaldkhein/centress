@@ -47,4 +47,4 @@ let errorFactory = (name, codes) => {
 module.exports = errorFactory;
 
 errorFactory.BaseError = BaseError;
-errorFactory.prefix = 'ERR_API_';
+errorFactory.prefix = 'ERR_APP_';

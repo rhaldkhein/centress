@@ -27,13 +27,10 @@ exports.boot = (userConfig) => {
   global.__CENTRESS__.logger = Logger;
 
   exports.lib = require('./libs');
-
-  const service = require('./service');
-  exports.service = service;
+  exports.module = require('./module');
 
   const database = require('./database');
   const server = require('./server');
-
 
   /**
    * Load extensions
