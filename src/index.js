@@ -5,46 +5,53 @@ const _defaultsDeep = require('lodash/defaultsDeep');
 const glob = require('glob');
 
 /**
+ * Load extensions
+ */
+
+function extensions(app) {
+  let pathExt = __dirname + '/extensions';
+  glob.sync('*.js', { cwd: pathExt })
+    .forEach(filename => {
+      let fn = require(pathExt + '/' + filename);
+      if (typeof fn === 'function') fn(app);
+    });
+  return app;
+}
+
+/**
  * Boot sequence
  */
 
 exports.boot = (userConfig) => {
 
+  // Mandatory options
   if (_isString(userConfig))
     userConfig = { path: { root: userConfig } };
 
+  // Building configs to single object
   const config = _defaultsDeep(
+    // Environment config
     require('./config/master')(userConfig),
+    // User config
     userConfig,
+    // Default config
     require('./config')
   );
   exports.config = config;
 
-  const Logger = exports.logger = require('./libs/logger');
-  Logger.init(config.log4js);
+  // Initialize built-in logger
+  const logger = exports.logger = require('./libs/logger');
+  logger.init(config.log4js);
 
   global.__CENTRESS__.config = config;
-  global.__CENTRESS__.logger = Logger;
+  global.__CENTRESS__.logger = logger;
 
   exports.lib = require('./libs');
-  exports.module = require('./module');
+  const modules = exports.module = require('./module');
+  modules.scan();
 
   const database = require('./database');
   const server = require('./server');
-
-  /**
-   * Load extensions
-   */
-
-  function extensions(app) {
-    let pathExt = __dirname + '/extensions';
-    glob.sync('*.js', { cwd: pathExt })
-      .forEach(filename => {
-        let fn = require(pathExt + '/' + filename);
-        if (typeof fn === 'function') fn(app);
-      });
-    return app;
-  }
 
   /**
    * Error handdler
@@ -52,7 +59,7 @@ exports.boot = (userConfig) => {
 
   function error(err) {
     database.close();
-    Logger.console.error(err);
+    logger.console.error(err);
   }
 
 

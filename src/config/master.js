@@ -3,7 +3,7 @@
 /**
  * Environment Overrides & Others
  * 
- * Will not override if env is `undefined`
+ * Will not override, if `process.env.<prop>` is `undefined`
  */
 
 const pkg = require('../../package.json');

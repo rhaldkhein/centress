@@ -5,7 +5,7 @@ const express = require('express');
 const http = require('http');
 const bodyparser = require('body-parser');
 const glob = require('glob');
-const _module = require('./module');
+const modules = require('./module').getAll();
 const { config, logger } = global.__CENTRESS__;
 
 module.exports = () => {
@@ -28,17 +28,17 @@ module.exports = () => {
 
   // Paths
   let pathRoutes = config.path.routes;
-  let pathModules = config.path.modules;
+  // let pathModules = config.path.modules;
 
   /**
    * Initialize startup modules
    */
 
-  if (pathModules) {
-    glob.sync('*/init.js', { cwd: pathModules })
-      .forEach(filename => {
-        require(pathModules + '/' + filename)(app, server);
-      });
+  for (const key in modules) {
+    if (modules.hasOwnProperty(key)) {
+      const elem = modules[key];
+      if (elem.init) elem.init(app, server);
+    }
   }
 
   /**
@@ -61,6 +61,12 @@ module.exports = () => {
   /**
    * Modules routes
    */
+
+  _.sortBy(_.values(modules), ['index']).forEach(mod => {
+    if (!mod.routes) return;
+    const moduleRouter = express.Router();
+    mod.routes(moduleRouter, baseRouter);
+  });
 
   const baseRouter = express.Router();
   if (pathModules) {
