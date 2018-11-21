@@ -5,8 +5,10 @@ const express = require('express');
 const http = require('http');
 const bodyparser = require('body-parser');
 const glob = require('glob');
-const modules = require('./module').getAll();
+
 const { config, logger } = global.__CENTRESS__;
+const moduleFactory = require('./module');
+const modules = moduleFactory.getAll();
 
 module.exports = () => {
 
@@ -37,7 +39,7 @@ module.exports = () => {
   for (const key in modules) {
     if (modules.hasOwnProperty(key)) {
       const elem = modules[key];
-      if (elem.init) elem.init(app, server);
+      if (_.isFunction(elem.init)) elem.init(app, server);
     }
   }
 
@@ -62,29 +64,15 @@ module.exports = () => {
    * Modules routes
    */
 
+  const baseRouter = express.Router();
   _.sortBy(_.values(modules), ['index']).forEach(mod => {
-    if (!mod.routes) return;
+    if (!_.isFunction(mod.routes)) return;
+    if (!_.isString(mod.prefix)) mod.prefix = '/' + mod.name;
     const moduleRouter = express.Router();
     mod.routes(moduleRouter, baseRouter);
+    app.use(baseUrl + mod.prefix, moduleRouter);
   });
-
-  const baseRouter = express.Router();
-  if (pathModules) {
-    let moduleRoutes = [];
-    glob.sync('*/routes.js', { cwd: pathModules })
-      .forEach(filename => {
-        let route = require(pathModules + '/' + filename);
-        if (!route.prefix) route.prefix = filename.split('/')[0];
-        moduleRoutes.push(route);
-      });
-    _.sortBy(moduleRoutes, ['index']).forEach(route => {
-      const moduleRouter = express.Router();
-      // Pass the router for module only and global router
-      route(moduleRouter, baseRouter);
-      app.use(baseUrl + '/' + route.prefix, moduleRouter);
-    });
-    app.use(baseUrl, baseRouter);
-  }
+  app.use(baseUrl, baseRouter);
 
   /**
    * Static files

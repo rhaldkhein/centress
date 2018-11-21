@@ -1,8 +1,9 @@
 'use strict';
 
-const _isString = require('lodash/isString');
-const _defaultsDeep = require('lodash/defaultsDeep');
+const _ = require('lodash');
 const glob = require('glob');
+
+let userConfig = {};
 
 /**
  * Load extensions
@@ -18,18 +19,22 @@ function extensions(app) {
   return app;
 }
 
-/**
- * Boot sequence
- */
+exports.set = (path, value) => {
+  _.set(userConfig, path, value);
+};
 
-exports.boot = (userConfig) => {
+exports.boot = (pathRoot) => {
 
   // Mandatory options
-  if (_isString(userConfig))
-    userConfig = { path: { root: userConfig } };
+  if (!_.isString(_.get(userConfig, 'path.root'))) {
+    if (_.isString(pathRoot))
+      _.set(userConfig, 'path.root', pathRoot);
+    else
+      throw new Error('Root path is required and must be string');
+  }
 
   // Building configs to single object
-  const config = _defaultsDeep(
+  const config = _.defaultsDeep(
     // Environment config
     require('./config/master')(userConfig),
     // User config
@@ -43,13 +48,18 @@ exports.boot = (userConfig) => {
   const logger = exports.logger = require('./libs/logger');
   logger.init(config.log4js);
 
+  // Globalize some objects for internal use
   global.__CENTRESS__.config = config;
   global.__CENTRESS__.logger = logger;
 
+  // Exports libraries
   exports.lib = require('./libs');
-  const modules = exports.module = require('./module');
-  modules.scan();
 
+  // Boot all centress modules passing centress object
+  const modules = exports.module = require('./module');
+  modules.boot(exports);
+
+  // Start database and express server
   const database = require('./database');
   const server = require('./server');
 
@@ -62,6 +72,9 @@ exports.boot = (userConfig) => {
     logger.console.error(err);
   }
 
+  /**
+   * Boot sequence
+   */
 
   Promise.resolve()
     .then(database)

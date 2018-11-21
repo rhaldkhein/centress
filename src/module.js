@@ -1,11 +1,9 @@
 'use strict';
 
-const _isEmpty = require('lodash/isEmpty');
-const _clone = require('lodash/clone');
+const _ = require('lodash');
 const logger = global.__CENTRESS__.logger;
 const path = global.__CENTRESS__.config.path;
 const pathRoot = path.root;
-const pathModules = path.modules;
 let deps = null;
 let modules = {};
 
@@ -17,26 +15,28 @@ try {
   logger.console.warn(`Can't find package.json. Skipped.`);
 }
 
-function initModule(name, mod) {
+function initModule(name, mod, centress) {
+  // LAST CODE:
+  centress.name = name;
   modules[name] = mod;
 }
 
 // Retrieve all module instances
-exports.getAll = () => _clone(modules);
+exports.getAll = () => _.clone(modules);
 
 // Retrieve a module instance
-exports.get = name => require(pathModules + '/' + name);
+exports.get = name => modules[name];
 
-// Scan centress modules and attach to modules object
-exports.scan = () => {
-  if (_isEmpty(deps)) return;
+// Scan and boot all centress modules and attach to modules object
+exports.boot = centress => {
+  if (_.isEmpty(deps)) return;
 
   for (const key in deps) {
     if (deps.hasOwnProperty(key)) {
-      const dep = require(key);
-      if (dep.centress) {
+      const dep = require(pathRoot + '/node_modules/' + key);
+      if (_.isFunction(dep.centress)) {
         // It's a Centress module
-        initModule(key, dep);
+        initModule(key, dep, centress);
       }
     }
   }
