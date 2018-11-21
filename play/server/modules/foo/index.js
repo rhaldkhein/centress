@@ -8,8 +8,6 @@ exports.centress = centress => {
 
     init: function (app, server) {
 
-      console.log(centress.module.get('module-test'));
-
       app.get('/foo/bar', (req, res) => {
         res.json({ foo: 'bar' });
       });

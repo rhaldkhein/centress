@@ -15,10 +15,9 @@ try {
   logger.console.warn(`Can't find package.json. Skipped.`);
 }
 
-function initModule(name, mod, centress) {
-  // LAST CODE:
-  centress.name = name;
-  modules[name] = mod;
+function initModule(name, centressModule) {
+  centressModule.name = name;
+  modules[name] = centressModule;
 }
 
 // Retrieve all module instances
@@ -36,7 +35,7 @@ exports.boot = centress => {
       const dep = require(pathRoot + '/node_modules/' + key);
       if (_.isFunction(dep.centress)) {
         // It's a Centress module
-        initModule(key, dep, centress);
+        initModule(key, dep.centress(centress));
       }
     }
   }
