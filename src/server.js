@@ -9,6 +9,13 @@ const glob = require('glob');
 const { config, logger } = global.__CENTRESS__;
 const moduleFactory = require('./module');
 const modules = moduleFactory.getAll();
+const HttpError = require('./libs/error/http');
+const InternalError = require('./libs/error/internal');
+const { BaseError } = require('./libs/error');
+
+const mapErrNameCode = {
+  'ValidationError': InternalError.VALIDATION
+};
 
 module.exports = () => {
 
@@ -98,6 +105,40 @@ module.exports = () => {
         app.use(baseUrl + '/' + url, endingRouter);
       });
   }
+
+  /**
+   * Ending handlers
+   */
+
+  if (config.handlers) {
+    // Flush composed data
+    app.use((req, res) => {
+      if (res.locals.__data)
+        return res.success(res.locals.__data);
+      throw new HttpError(HttpError.NOT_FOUND);
+    });
+    // Catch and flush error
+    app.use((err, req, res, next) => {
+      // Convert other errors to local error
+      if (err instanceof BaseError) {
+        res.error(err);
+      } else {
+        let errCode = mapErrNameCode[err.name];
+        // Only log unknown errors
+        if (!errCode) {
+          // Log to file on production
+          if (config.production) logger.file.error(err.message);
+          // Log to console for development
+          else logger.console.error(err);
+        }
+        res.error(
+          new InternalError(errCode || InternalError.DEFAULT),
+          err
+        );
+      }
+    });
+  }
+
 
   /**
    * Listen server
