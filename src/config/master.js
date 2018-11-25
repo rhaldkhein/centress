@@ -6,46 +6,44 @@
  * Will not override, if `process.env.<prop>` is `undefined`
  */
 
+const _defaultsDeep = require('lodash/defaultsDeep');
 const pkg = require('../../package.json');
 
 module.exports = userConfig => {
-  return {
 
-    // Log Level
-    logLevel: process.env.APP_LOG_LEVEL,
+  let config = _defaultsDeep(
+    {
 
-    // Path
-    path: {
-      routes: userConfig.path.root + '/routes',
-      modules: userConfig.path.root + '/modules'
-    },
+      // Log Level
+      logLevel: process.env.APP_LOG_LEVEL,
 
-    // Server
-    server: {
-      host: process.env.APP_HOST,
-      port: process.env.APP_PORT || process.env.PORT
-    },
+      // Server
+      server: {
+        host: process.env.APP_HOST,
+        port: process.env.APP_PORT || process.env.PORT
+      },
 
-    // Database
-    database: {
-      name: process.env.APP_DB_NAME,
-      user: process.env.APP_DB_USER,
-      password: process.env.APP_DB_PASS,
-      host: process.env.APP_DB_HOST,
-      port: process.env.APP_DB_PORT
-    },
-
-    /**
-     * VENDORS
-     */
-
-    log4js: {
-      appenders: {
-        file: {
-          filename: `${userConfig.path.root}/logs/${pkg.name}.log`
-        }
+      // Database
+      database: {
+        name: process.env.APP_DB_NAME,
+        user: process.env.APP_DB_USER,
+        password: process.env.APP_DB_PASS,
+        host: process.env.APP_DB_HOST,
+        port: process.env.APP_DB_PORT
       }
-    }
 
-  };
+    },
+    userConfig
+  );
+
+  if (!config.path.routes)
+    config.path.routes = config.path.root + '/routes';
+
+  if (!config.path.modules)
+    config.path.modules = config.path.root + '/modules';
+
+  if (!config.log4js.appenders.file.filename)
+    config.log4js.appenders.file.filename = `${config.path.root}/logs/${pkg.name}.log`;
+
+  return config;
 };

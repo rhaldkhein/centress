@@ -2,7 +2,8 @@
 
 // Default error class
 const codes = {
-  'VALIDATION': 400
+  'VALIDATION': 400,
+  'MODULE_NOT_FOUND': 404,
 };
 
 const errorFactory = require('.');

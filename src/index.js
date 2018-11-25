@@ -19,9 +19,23 @@ function extensions(app) {
   return app;
 }
 
+/**
+ * Set single user configuration
+ */
+
 exports.set = (path, value) => {
   _.set(userConfig, path, value);
 };
+
+/**
+ * Export module hub
+ */
+
+exports.module = require('./module');
+
+/**
+ * Boot up the server
+ */
 
 exports.boot = (pathRoot) => {
 
@@ -33,15 +47,16 @@ exports.boot = (pathRoot) => {
       throw new Error('Root path is required and must be string');
   }
 
-  // Building configs to single object
-  const config = _.defaultsDeep(
-    // Environment config
-    require('./config/master')(userConfig),
+  // Merge default and user config
+  const baseConfig = _.defaultsDeep(
     // User config
     userConfig,
     // Default config
     require('./config')
   );
+
+  // Apply master config for env vars
+  const config = require('./config/master')(baseConfig);
   exports.config = config;
 
   // Initialize built-in logger
@@ -56,8 +71,7 @@ exports.boot = (pathRoot) => {
   exports.lib = require('./libs');
 
   // Boot all centress modules passing centress object
-  const modules = exports.module = require('./module');
-  modules.boot(exports);
+  exports.module.boot(exports);
 
   // Start database and express server
   const database = require('./database');

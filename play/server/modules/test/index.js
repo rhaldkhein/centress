@@ -1,30 +1,45 @@
 'use strict';
 
-exports.centress = centress => {
-  return {
+const centress = require('../../../../src');
+const centressModule = centress.module;
 
-    prefix: '/test',
-    // index: 1,
+/**
+ * Enable this module as centress module
+ */
 
-    init: function (app, server) {
+centress.module(exports, {
 
-      app.get('/test/bar', (req, res) => {
-        res.json({ test: 'bar' });
-      });
+  // prefix: '/test',
+  // index: 1,
 
-    },
+  init: function (app, server) {
 
-    routes: (moduleRouter, baseRouter) => {
+    let a = centressModule.get('module-foo');
+    console.log(a);
 
-      moduleRouter.get('/test/world', (req, res) => {
-        res.json({ test: 'world' });
-      });
+    app.get('/test/bar', (req, res) => {
+      res.json({ test: 'bar' });
+    });
 
-      baseRouter.get('/test/foo', (req, res) => {
-        res.json({ test: 'foo' });
-      });
+  },
 
-    }
+  routes: (moduleRouter, baseRouter) => {
 
-  };
-};
+    moduleRouter.get('/test/world', (req, res) => {
+      res.json({ test: 'world' });
+    });
+
+    baseRouter.get('/test/foo', (req, res) => {
+      res.json({ test: 'foo' });
+    });
+
+  }
+
+});
+
+
+/**
+ * Other custom exports
+ */
+
+exports.funcTest = 'The Test';
