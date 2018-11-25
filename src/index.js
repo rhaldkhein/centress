@@ -34,6 +34,12 @@ exports.set = (path, value) => {
 exports.module = require('./module');
 
 /**
+ * Return a module
+ */
+
+exports.get = exports.module.get;
+
+/**
  * Boot up the server
  */
 

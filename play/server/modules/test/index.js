@@ -1,7 +1,6 @@
 'use strict';
 
 const centress = require('../../../../src');
-const centressModule = centress.module;
 
 /**
  * Enable this module as centress module
@@ -13,9 +12,6 @@ centress.module(exports, {
   // index: 1,
 
   init: function (app, server) {
-
-    let a = centressModule.get('module-foo');
-    console.log(a);
 
     app.get('/test/bar', (req, res) => {
       res.json({ test: 'bar' });
@@ -37,6 +33,10 @@ centress.module(exports, {
 
 });
 
+process.nextTick(() => {
+  let a = centress.get('module-foo');
+  console.log(a);
+});
 
 /**
  * Other custom exports

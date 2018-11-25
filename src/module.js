@@ -6,7 +6,6 @@ const path = require('path');
 const InternalError = require('./libs/error/internal');
 
 let isMother = false;
-
 let motherCentress;
 
 let depsPkg = {}; // NPM modules
@@ -28,9 +27,9 @@ function init(name, mod, centress) {
 module.exports = (context, options) => {
   if (context.__CM__) return;
   context.__CM__ = centress => {
-    // // `centress` here is the mother centress
-    // // that holds all other centress modules
-    motherCentress = centress;
+    // `centress` here is the mother centress
+    // that holds all other centress modules
+    if (!isMother) motherCentress = centress;
     return options;
   };
 };
@@ -45,7 +44,7 @@ module.exports.get = name => {
   }
   if (!mod) throw new InternalError(
     InternalError.MODULE_NOT_FOUND,
-    `Module ${name} is not found`
+    `Module ${name} is not found. Maybe the module is not mounted yet.`
   );
   return mod;
 };
@@ -81,24 +80,21 @@ module.exports.boot = centress => {
 
   // Scan NPM modules
   for (let key in depsPkg) {
-    if (depsPkg.hasOwnProperty(key)) {
-      let dep = require(pathRoot + '/node_modules/' + key);
-      if (_.isFunction(dep.__CM__)) {
-        // It's a Centress module
-        init(key, dep, centress);
-      }
+    let dep = require(pathRoot + '/node_modules/' + key);
+    if (_.isFunction(dep.__CM__)) {
+      // It's a Centress module
+      init(key, dep, centress);
     }
   }
+
 
   // Scan local modules
   if (configPath.modules) {
     for (let key in depsLoc) {
-      if (depsPkg.hasOwnProperty(key)) {
-        let dep = require(configPath.modules + '/' + key);
-        if (_.isFunction(dep.__CM__)) {
-          // It's a Centress module
-          init(key, dep, centress);
-        }
+      let dep = require(configPath.modules + '/' + key);
+      if (_.isFunction(dep.__CM__)) {
+        // It's a Centress module
+        init(key, dep, centress);
       }
     }
   }

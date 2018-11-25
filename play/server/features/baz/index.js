@@ -1,3 +1,7 @@
 'use strict';
 
-exports.funcBaz = 'Hello Baz';
+const centress = require('../../../../src');
+
+centress.module(exports, {});
+
+exports.funcBaz = 'The Baz';

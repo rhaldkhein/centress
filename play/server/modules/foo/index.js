@@ -1,7 +1,6 @@
 'use strict';
 
 const centress = require('../../../../src');
-const centressModule = centress.module;
 
 /**
  * Enable this module as centress module
@@ -12,10 +11,7 @@ centress.module(exports, {
   // prefix: '/test',
   // index: 1,
 
-  init: function (app, server) {
-
-    let a = centressModule.get('module-test');
-    console.log(a);
+  init: (app, server) => {
 
     app.get('/foo/bar', (req, res) => {
       res.json({ foo: 'bar' });
@@ -35,6 +31,17 @@ centress.module(exports, {
 
   }
 
+});
+
+process.nextTick(() => {
+  let a = centress.get('module-test');
+  console.log(a);
+
+  let b = centress.get('yoo');
+  console.log(b);
+
+  let c = centress.get('baz');
+  console.log(c);
 });
 
 
