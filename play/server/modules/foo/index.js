@@ -13,6 +13,15 @@ centress.module(exports, {
 
   init: (app, server) => {
 
+    let a = centress.get('module-test');
+    console.log(a);
+
+    let b = centress.get('yoo');
+    console.log(b);
+
+    let c = centress.get('baz');
+    console.log(c);
+
     app.get('/foo/bar', (req, res) => {
       res.json({ foo: 'bar' });
     });
@@ -32,18 +41,6 @@ centress.module(exports, {
   }
 
 });
-
-process.nextTick(() => {
-  let a = centress.get('module-test');
-  console.log(a);
-
-  let b = centress.get('yoo');
-  console.log(b);
-
-  let c = centress.get('baz');
-  console.log(c);
-});
-
 
 /**
  * Other custom exports

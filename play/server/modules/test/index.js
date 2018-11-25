@@ -8,10 +8,13 @@ const centress = require('../../../../src');
 
 centress.module(exports, {
 
-  // prefix: '/test',
-  // index: 1,
+  prefix: '/test',
+  index: 2,
 
   init: function (app, server) {
+
+    let a = centress.get('module-foo');
+    console.log(a);
 
     app.get('/test/bar', (req, res) => {
       res.json({ test: 'bar' });
@@ -31,11 +34,6 @@ centress.module(exports, {
 
   }
 
-});
-
-process.nextTick(() => {
-  let a = centress.get('module-foo');
-  console.log(a);
 });
 
 /**

@@ -15,8 +15,11 @@ let centresses = {}; // All centress modules pool
 
 
 // Init and attach module
-function init(name, mod, centress) {
-  let cntrs = centresses[name] = mod.__CM__(centress);
+function init(name, mod, centress, config) {
+  let cntrs = centresses[name] = _.assign(
+    mod.__CM__(centress),
+    config.module.settings[name]
+  );
   cntrs.name = name;
   modules[name] = mod;
 }
@@ -57,7 +60,8 @@ module.exports.boot = centress => {
 
   isMother = true;
 
-  let configPath = global.__CENTRESS__.config.path;
+  let config = global.__CENTRESS__.config;
+  let configPath = config.path;
   let pathRoot = configPath.root;
 
   // Try to get dependencies names from package.json
@@ -83,7 +87,7 @@ module.exports.boot = centress => {
     let dep = require(pathRoot + '/node_modules/' + key);
     if (_.isFunction(dep.__CM__)) {
       // It's a Centress module
-      init(key, dep, centress);
+      init(key, dep, centress, config);
     }
   }
 
@@ -94,7 +98,7 @@ module.exports.boot = centress => {
       let dep = require(configPath.modules + '/' + key);
       if (_.isFunction(dep.__CM__)) {
         // It's a Centress module
-        init(key, dep, centress);
+        init(key, dep, centress, config);
       }
     }
   }

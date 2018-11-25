@@ -28,6 +28,11 @@ exports.set = (path, value) => {
 };
 
 /**
+ * Export internal libraries
+ */
+exports.lib = require('./libs');
+
+/**
  * Export module hub
  */
 
@@ -72,9 +77,6 @@ exports.boot = (pathRoot) => {
   // Globalize some objects for internal use
   global.__CENTRESS__.config = config;
   global.__CENTRESS__.logger = logger;
-
-  // Exports libraries
-  exports.lib = require('./libs');
 
   // Boot all centress modules passing centress object
   exports.module.boot(exports);

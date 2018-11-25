@@ -1,6 +1,8 @@
 'use strict';
 
-let config = {};
+let config = {
+  modules: { settings: {} }
+};
 
 // Sub Configs
 require('./path')(config);
