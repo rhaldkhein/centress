@@ -16,7 +16,7 @@ module.exports = config => {
   config.baseUrl = '';
 
   // Settings for each modules
-  config.module = { settings: {} };
+  config.modules = { settings: {} };
 
   // Use built in handlers or not
   config.handlers = true;

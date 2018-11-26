@@ -5,6 +5,8 @@ const glob = require('glob');
 const path = require('path');
 const InternalError = require('./libs/error/internal');
 
+const initSettingsKeys = ['disabled', 'index', 'prefix'];
+
 let isMother = false;
 let motherCentress;
 
@@ -17,14 +19,17 @@ let centresses = {}; // All centress modules pool
 // Init and attach module
 function init(name, mod, centress, config) {
   // Resolve settings
-  let cntrs = centresses[name] = _.assign(
+  let ctrs = _.assign(
     mod.__CM__(centress),
-    config.module.settings[name]
+    _.pick(config.modules.settings[name], initSettingsKeys)
   );
-  if (_.isNil(cntrs.index))
-    cntrs.index = Number.MAX_SAFE_INTEGER;
-  cntrs.name = name;
-  modules[name] = mod;
+  ctrs.name = name;
+  if (_.isNil(ctrs.index))
+    ctrs.index = Number.MAX_SAFE_INTEGER * 0.1;
+  if (!ctrs.disabled) {
+    centresses[name] =  ctrs;
+    modules[name] = mod;
+  }
 }
 
 /**
@@ -79,10 +84,13 @@ module.exports.boot = centress => {
 
   // Try to get dependencies names from local modules
   if (configPath.modules) {
-    glob.sync('*', { cwd: configPath.modules })
-      .forEach(filename => {
-        depsLoc[path.basename(filename, '.js')] = null;
-      });
+    let locModPath = configPath.modules;
+    let fnPushDepsLoc = filename => {
+      depsLoc[path.basename(filename, '.js')] = locModPath;
+    };
+    glob.sync('*', { cwd: locModPath }).forEach(fnPushDepsLoc);
+    locModPath = __dirname + '/modules';
+    glob.sync('*', { cwd: locModPath }).forEach(fnPushDepsLoc);
   }
 
   // Scan NPM modules
@@ -94,11 +102,10 @@ module.exports.boot = centress => {
     }
   }
 
-
   // Scan local modules
-  if (configPath.modules) {
+  if (!_.isEmpty(depsLoc)) {
     for (let key in depsLoc) {
-      let dep = require(configPath.modules + '/' + key);
+      let dep = require(depsLoc[key] + '/' + key);
       if (_.isFunction(dep.__CM__)) {
         // It's a Centress module
         init(key, dep, centress, config);

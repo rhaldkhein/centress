@@ -8,10 +8,11 @@ const glob = require('glob');
 
 const { config, logger } = global.__CENTRESS__;
 const moduleFactory = require('./module');
-const modules = moduleFactory.getAll();
 const HttpError = require('./libs/error/http');
 const InternalError = require('./libs/error/internal');
 const { BaseError } = require('./libs/error');
+
+const modules = _.sortBy(_.values(moduleFactory.getAll()), ['index']);
 
 const mapErrNameCode = {
   'ValidationError': InternalError.VALIDATION
@@ -37,18 +38,16 @@ module.exports = () => {
 
   // Paths
   let pathRoutes = config.path.routes;
-  // let pathModules = config.path.modules;
 
   /**
    * Initialize startup modules
    */
 
-  for (const key in modules) {
-    if (modules.hasOwnProperty(key)) {
-      const elem = modules[key];
-      if (_.isFunction(elem.init)) elem.init(app, server);
-    }
-  }
+  modules.forEach(mod => {
+    // TODO: Allow async await init
+    if (_.isFunction(mod.init)) 
+      mod.init(app, server);
+  });
 
   /**
    * Important routes
@@ -72,7 +71,7 @@ module.exports = () => {
    */
 
   const baseRouter = express.Router();
-  _.sortBy(_.values(modules), ['index']).forEach(mod => {
+  modules.forEach(mod => {
     if (!_.isFunction(mod.routes)) return;
     if (!_.isString(mod.prefix)) mod.prefix = '/' + mod.name;
     const moduleRouter = express.Router();

@@ -22,6 +22,9 @@ centress.module(exports, {
     let c = centress.get('baz');
     console.log(c);
 
+    let d = centress.get('built-in');
+    console.log(d);
+
     app.get('/foo/bar', (req, res) => {
       res.json({ foo: 'bar' });
     });
