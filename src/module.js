@@ -16,10 +16,13 @@ let centresses = {}; // All centress modules pool
 
 // Init and attach module
 function init(name, mod, centress, config) {
+  // Resolve settings
   let cntrs = centresses[name] = _.assign(
     mod.__CM__(centress),
     config.module.settings[name]
   );
+  if (_.isNil(cntrs.index))
+    cntrs.index = Number.MAX_SAFE_INTEGER;
   cntrs.name = name;
   modules[name] = mod;
 }
@@ -47,7 +50,7 @@ module.exports.get = name => {
   }
   if (!mod) throw new InternalError(
     InternalError.MODULE_NOT_FOUND,
-    `Module ${name} is not found. Maybe the module is not mounted yet.`
+    `Module "${name}" is not found. Maybe the module is not mounted yet?`
   );
   return mod;
 };

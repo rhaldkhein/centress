@@ -67,7 +67,7 @@ exports.boot = (pathRoot) => {
   );
 
   // Apply master config for env vars
-  const config = require('./config/master')(baseConfig);
+  const config = Object.freeze(require('./config/master')(baseConfig));
   exports.config = config;
 
   // Initialize built-in logger

@@ -1,7 +1,7 @@
 'use strict';
 
 let config = {
-  modules: { settings: {} }
+  module: { settings: {} }
 };
 
 // Sub Configs
