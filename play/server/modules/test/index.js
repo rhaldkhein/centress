@@ -22,7 +22,7 @@ centress.module(exports, {
 
   },
 
-  routes: (moduleRouter, baseRouter) => {
+  routes: function (moduleRouter, baseRouter) {
 
     moduleRouter.get('/test/world', (req, res) => {
       res.json({ test: 'world' });

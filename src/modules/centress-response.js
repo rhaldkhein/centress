@@ -13,7 +13,7 @@ let config;
 
 centress.module(exports, {
 
-  index: Number.MAX_SAFE_INTEGER * 0.1,
+  index: Number.MAX_SAFE_INTEGER - 1000,
 
   init: (_config) => {
     config = _config;
