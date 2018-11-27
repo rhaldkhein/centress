@@ -11,7 +11,7 @@ centress.module(exports, {
   prefix: '/test',
   index: 2,
 
-  init: function (app, server) {
+  init: function (config, app, server) {
 
     let a = centress.get('module-foo');
     console.log(a);

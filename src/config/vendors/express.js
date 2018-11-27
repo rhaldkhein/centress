@@ -6,6 +6,4 @@ module.exports = config => {
 
   config.express.settings = {};
 
-  config.express.statics = [];
-
 };

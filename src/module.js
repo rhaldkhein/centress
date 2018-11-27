@@ -27,7 +27,7 @@ function init(name, mod, centress, config) {
   if (_.isNil(ctrs.index))
     ctrs.index = Number.MAX_SAFE_INTEGER * 0.1;
   if (!ctrs.disabled) {
-    centresses[name] =  ctrs;
+    centresses[name] = ctrs;
     modules[name] = mod;
   }
 }

@@ -10,7 +10,7 @@ let userConfig = {};
  */
 
 function extensions(app) {
-  let pathExt = __dirname + '/extensions';
+  let pathExt = __dirname + '/exts';
   glob.sync('*.js', { cwd: pathExt })
     .forEach(filename => {
       let fn = require(pathExt + '/' + filename);
@@ -70,28 +70,25 @@ exports.boot = (pathRoot) => {
   const config = Object.freeze(require('./config/master')(baseConfig));
   exports.config = config;
 
-  // Initialize built-in logger
-  const logger = exports.logger = require('./libs/logger');
-  logger.init(config.log4js);
-
   // Globalize some objects for internal use
   global.__CENTRESS__.config = config;
-  global.__CENTRESS__.logger = logger;
+
+  // Initialize built-in logger
+  const logger = require('./libs/logger/console');
 
   // Boot all centress modules passing centress object
   exports.module.boot(exports);
 
   // Start database and express server
-  const database = require('./database');
   const server = require('./server');
 
   /**
-   * Error handdler
+   * Error handler
    */
 
   function error(err) {
-    database.close();
-    logger.console.error(err);
+    server.error(err);
+    logger.error(err);
   }
 
   /**
@@ -99,7 +96,6 @@ exports.boot = (pathRoot) => {
    */
 
   Promise.resolve()
-    .then(database)
     .then(server)
     .then(extensions)
     .catch(error);

@@ -11,7 +11,7 @@ centress.module(exports, {
   // prefix: '/test',
   // index: 1,
 
-  init: (app, server) => {
+  init: (config, app, server) => {
 
     let a = centress.get('module-test');
     console.log(a);
@@ -21,9 +21,6 @@ centress.module(exports, {
 
     let c = centress.get('baz');
     console.log(c);
-
-    let d = centress.get('built-in');
-    console.log(d);
 
     app.get('/foo/bar', (req, res) => {
       res.json({ foo: 'bar' });

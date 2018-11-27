@@ -7,12 +7,12 @@ centress.set('path.modules', __dirname + '/features');
 
 // Overriding default module settings
 centress.set('modules.settings', {
-  'module-test': { 
-    prefix: '/new_pref', 
-    index: 1, 
-    disabled: false,
-    config: {}
+
+  'module-test': {
+    prefix: '/new_pref',
+    index: 1
   }
+
 });
 
 centress.boot(__dirname);

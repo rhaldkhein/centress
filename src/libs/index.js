@@ -1,3 +1,3 @@
 'use strict';
 
-exports.get = name => require('./' + name);
+module.exports = name => require('./' + name);

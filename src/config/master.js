@@ -13,25 +13,13 @@ module.exports = userConfig => {
 
   let config = _defaultsDeep(
     {
-
       // Log Level
       logLevel: process.env.APP_LOG_LEVEL,
-
       // Server
       server: {
         host: process.env.APP_HOST,
         port: process.env.APP_PORT || process.env.PORT
-      },
-
-      // Database
-      database: {
-        name: process.env.APP_DB_NAME,
-        user: process.env.APP_DB_USER,
-        password: process.env.APP_DB_PASS,
-        host: process.env.APP_DB_HOST,
-        port: process.env.APP_DB_PORT
       }
-
     },
     userConfig
   );

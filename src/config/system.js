@@ -18,7 +18,4 @@ module.exports = config => {
   // Settings for each modules
   config.modules = { settings: {} };
 
-  // Use built in handlers or not
-  config.handlers = true;
-
 };
