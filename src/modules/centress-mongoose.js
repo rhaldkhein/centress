@@ -30,9 +30,9 @@ function validateOnUpdate(schema) {
 
 centress.module(exports, {
 
-  index: Number.MIN_SAFE_INTEGER + 1002,
+  index: Number.MIN_SAFE_INTEGER + 999992,
 
-  init: config => {
+  init: (app, config) => {
 
     _.defaults(config, defaults);
 

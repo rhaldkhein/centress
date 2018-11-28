@@ -51,9 +51,9 @@ exports.get = exports.module.get;
 exports.boot = (pathRoot) => {
 
   // Mandatory options
-  if (!_.isString(_.get(userConfig, 'path.root'))) {
+  if (!_.isString(_.get(userConfig, 'paths.root'))) {
     if (_.isString(pathRoot))
-      _.set(userConfig, 'path.root', pathRoot);
+      _.set(userConfig, 'paths.root', pathRoot);
     else
       throw new Error('Root path is required and must be string');
   }

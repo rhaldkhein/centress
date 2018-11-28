@@ -69,7 +69,7 @@ module.exports.boot = centress => {
   isMother = true;
 
   let config = global.__CENTRESS__.config;
-  let configPath = config.path;
+  let configPath = config.paths;
   let pathRoot = configPath.root;
 
   // Try to get dependencies names from package.json

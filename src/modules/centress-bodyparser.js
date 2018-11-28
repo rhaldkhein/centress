@@ -5,9 +5,9 @@ const bodyparser = require('body-parser');
 
 centress.module(exports, {
 
-  index: Number.MIN_SAFE_INTEGER + 1000,
+  index: Number.MIN_SAFE_INTEGER + 999990,
 
-  init: (config, app) => {
+  init: app => {
     // json and form-urlencoded
     app.use(bodyparser.json());
     app.use(

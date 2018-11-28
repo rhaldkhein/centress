@@ -8,10 +8,10 @@ const centress = require('../../../../src');
 
 centress.module(exports, {
 
-  // prefix: '/test',
+  prefix: '/',
   // index: 1,
 
-  init: (config, app, server) => {
+  init: function (app) {
 
     let a = centress.get('module-test');
     console.log(a);
@@ -28,14 +28,10 @@ centress.module(exports, {
 
   },
 
-  routes: (moduleRouter, baseRouter) => {
+  routes: function (router) {
 
-    moduleRouter.get('/foo/world', (req, res) => {
+    router.get('/foo/world', (req, res) => {
       res.json({ foo: 'world' });
-    });
-
-    baseRouter.get('/foo/foo', (req, res) => {
-      res.json({ foo: 'foo' });
     });
 
   }

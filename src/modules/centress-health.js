@@ -1,13 +1,12 @@
 'use strict';
 
 const centress = require('..');
-const bodyparser = require('body-parser');
 
 centress.module(exports, {
 
-  index: Number.MIN_SAFE_INTEGER + 1001,
+  index: Number.MIN_SAFE_INTEGER + 999991,
 
-  init: (config, app) => {
+  init: app => {
     app.get('/health', (req, res) => {
       res.end();
     });

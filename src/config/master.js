@@ -24,14 +24,14 @@ module.exports = userConfig => {
     userConfig
   );
 
-  if (!config.path.routes)
-    config.path.routes = config.path.root + '/routes';
+  if (!config.paths.routes)
+    config.paths.routes = config.paths.root + '/routes';
 
-  if (!config.path.modules)
-    config.path.modules = config.path.root + '/modules';
+  if (!config.paths.modules)
+    config.paths.modules = config.paths.root + '/modules';
 
   if (!config.log4js.appenders.file.filename)
-    config.log4js.appenders.file.filename = `${config.path.root}/logs/${pkg.name}.log`;
+    config.log4js.appenders.file.filename = `${config.paths.root}/logs/${pkg.name}.log`;
 
   return config;
 };

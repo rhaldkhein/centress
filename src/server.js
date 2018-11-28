@@ -20,7 +20,7 @@ module.exports = () => {
   for (let key in expressSettings) app.set(key, expressSettings[key]);
 
   // Paths
-  let pathRoutes = config.path.routes;
+  let pathRoutes = config.paths.routes;
 
   /**
    * Initialize startup modules
@@ -30,7 +30,7 @@ module.exports = () => {
     modules.forEach(mod => {
       if (_.isFunction(mod.init)) {
         let settings = config.modules.settings[mod.name] || {};
-        inits.push(mod.init(settings.config || {}, app, server));
+        inits.push(mod.init(app, settings.config || {}, server));
       }
     });
     return Promise.all(inits);
@@ -58,15 +58,13 @@ module.exports = () => {
    * Modules routes
    */
   function setupModulesRoutes() {
-    const baseRouter = express.Router();
     modules.forEach(mod => {
       if (!_.isFunction(mod.routes)) return;
       if (!_.isString(mod.prefix)) mod.prefix = '/' + mod.name;
       const moduleRouter = express.Router();
-      mod.routes(moduleRouter, baseRouter, app);
+      mod.routes(moduleRouter);
       app.use(baseUrl + mod.prefix, moduleRouter);
     });
-    app.use(baseUrl, baseRouter);
   }
 
   /**
