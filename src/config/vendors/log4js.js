@@ -12,7 +12,7 @@ module.exports = config => {
       },
       file: {
         type: 'file',
-        // filename: `../logs/server.log`,
+        // filename: `logs/server.log`,
         maxLogSize: 10485760,
         backups: 3,
         compress: true

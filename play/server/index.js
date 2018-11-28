@@ -1,9 +1,22 @@
 'use strict';
 
-const _set = require('lodash/set');
 const centress = require('../../src');
 
-let config = {};
-_set(config, 'path.root', __dirname);
+centress.set('baseUrl', '/api');
+centress.set('paths.modules', __dirname + '/features');
 
-centress.boot(config);
+// Overriding default module settings
+centress.set('modules.settings', {
+
+  // 'module-test': {
+  //   prefix: '/new_pref',
+  //   index: 1
+  // }
+
+  'centress-mongoose': {
+    config: { database: 'centress' }
+  }
+
+});
+
+centress.boot(__dirname);

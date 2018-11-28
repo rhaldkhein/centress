@@ -1,63 +1,101 @@
 'use strict';
 
-const _isString = require('lodash/isString');
-const _defaultsDeep = require('lodash/defaultsDeep');
+const _ = require('lodash');
 const glob = require('glob');
 
+let userConfig = {};
+
 /**
- * Boot sequence
+ * Load extensions
  */
 
-exports.boot = (userConfig) => {
+function extensions(app) {
+  let pathExt = __dirname + '/exts';
+  glob.sync('*.js', { cwd: pathExt })
+    .forEach(filename => {
+      let fn = require(pathExt + '/' + filename);
+      if (typeof fn === 'function') fn(app);
+    });
+  return app;
+}
 
-  if (_isString(userConfig))
-    userConfig = { path: { root: userConfig } };
+/**
+ * Set single user configuration
+ */
 
-  const config = _defaultsDeep(
-    require('./config/master')(userConfig),
+exports.set = (path, value) => {
+  _.set(userConfig, path, value);
+};
+
+/**
+ * Export internal libraries
+ */
+exports.lib = require('./libs');
+
+/**
+ * Export module hub
+ */
+
+exports.module = require('./module');
+
+/**
+ * Return a module
+ */
+
+exports.get = exports.module.get;
+
+/**
+ * Boot up the server
+ */
+
+exports.boot = (pathRoot) => {
+
+  // Mandatory options
+  if (!_.isString(_.get(userConfig, 'paths.root'))) {
+    if (_.isString(pathRoot))
+      _.set(userConfig, 'paths.root', pathRoot);
+    else
+      throw new Error('Root path is required and must be string');
+  }
+
+  // Merge default and user config
+  const baseConfig = _.defaultsDeep(
+    // User config
     userConfig,
+    // Default config
     require('./config')
   );
+
+  // Apply master config for env vars
+  const config = Object.freeze(require('./config/master')(baseConfig));
   exports.config = config;
 
-  const Logger = exports.logger = require('./libs/logger');
-  Logger.init(config.log4js);
-
+  // Globalize some objects for internal use
   global.__CENTRESS__.config = config;
-  global.__CENTRESS__.logger = Logger;
 
-  exports.lib = require('./libs');
-  exports.module = require('./module');
+  // Initialize built-in logger
+  const logger = require('./libs/logger/console');
 
-  const database = require('./database');
+  // Boot all centress modules passing centress object
+  exports.module.boot(exports);
+
+  // Start database and express server
   const server = require('./server');
 
   /**
-   * Load extensions
-   */
-
-  function extensions(app) {
-    let pathExt = __dirname + '/extensions';
-    glob.sync('*.js', { cwd: pathExt })
-      .forEach(filename => {
-        let fn = require(pathExt + '/' + filename);
-        if (typeof fn === 'function') fn(app);
-      });
-    return app;
-  }
-
-  /**
-   * Error handdler
+   * Error handler
    */
 
   function error(err) {
-    database.close();
-    Logger.console.error(err);
+    server.error(err);
+    logger.error(err);
   }
 
+  /**
+   * Boot sequence
+   */
 
   Promise.resolve()
-    .then(database)
     .then(server)
     .then(extensions)
     .catch(error);

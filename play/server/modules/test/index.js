@@ -1,11 +1,39 @@
 'use strict';
 
-// Reserved
-exports.init = null;
-exports.routes = null;
-exports.index = null;
-exports.prefix = null;
+const centress = require('../../../../src');
 
-// Custom
-exports.custom = null;
-exports.func = null;
+/**
+ * Enable this module as centress module
+ */
+
+centress.module(exports, {
+
+  prefix: '/',
+  index: 2,
+
+  init: function (app) {
+
+    let a = centress.get('module-foo');
+    console.log(a);
+
+    app.get('/test/bar', (req, res) => {
+      res.json({ test: 'bar' });
+    });
+
+  },
+
+  routes: function (router) {
+
+    router.get('/test/world', (req, res) => {
+      res.json({ test: 'world' });
+    });
+
+  }
+
+});
+
+/**
+ * Other custom exports
+ */
+
+exports.funcTest = 'The Test';

@@ -15,4 +15,7 @@ module.exports = config => {
   // Base url
   config.baseUrl = '';
 
+  // Settings for each modules
+  config.modules = { settings: {} };
+
 };

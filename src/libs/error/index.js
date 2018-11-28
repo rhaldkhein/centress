@@ -1,14 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-
-class BaseError extends Error {
-  constructor(code, message, data) {
-    super(message);
-    this.data = data;
-  }
-  init() { }
-}
+const BaseError = require('./base');
 
 let errorFactory = (name, codes) => {
 
