@@ -13,9 +13,9 @@ centress.set('modules.settings', {
   //   index: 1
   // }
 
-  'centress-mongoose': {
-    config: { database: 'centress' }
-  }
+  // 'centress-mongoose': {
+  //   config: { database: 'centress' }
+  // }
 
 });
 
