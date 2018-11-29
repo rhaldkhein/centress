@@ -3,7 +3,6 @@
 const _ = require('lodash');
 const express = require('express');
 const http = require('http');
-const glob = require('glob');
 const { config } = global.__CENTRESS__;
 const moduleFactory = require('./module');
 const modules = _.sortBy(_.values(moduleFactory.getAll()), ['index']);
@@ -12,15 +11,16 @@ const logger = require('./libs/logger/console');
 module.exports = () => {
 
   const app = express();
+  const api = express.Router();
+  const router = express.Router();
   const server = http.Server(app);
-  const baseUrl = config.baseUrl;
+
+  app.use(config.apiBaseUrl, api);
+  app.use(router);
 
   // Apply express settings
   let expressSettings = config.express.settings;
   for (let key in expressSettings) app.set(key, expressSettings[key]);
-
-  // Paths
-  let pathRoutes = config.paths.routes;
 
   /**
    * Initialize startup modules
@@ -30,28 +30,10 @@ module.exports = () => {
     modules.forEach(mod => {
       if (_.isFunction(mod.init)) {
         let settings = config.modules.settings[mod.name] || {};
-        inits.push(mod.init(app, settings.config || {}, server));
+        inits.push(mod.init({ app, api, router, server, config: settings.config || {} }));
       }
     });
     return Promise.all(inits);
-  }
-
-  /**
-   * Important routes
-   */
-  function setupImportantRoutes() {
-    if (pathRoutes) {
-      const importantRouter = express.Router();
-      glob.sync('**/_*.js', { cwd: pathRoutes })
-        .reverse().forEach(filename => {
-          let url = filename.replace(/.js$/, '')
-            .replace(/^_/, '')
-            .replace(/\/_/, '/');
-          require(pathRoutes + '/' + filename)(importantRouter, app);
-          if (url === 'index') url = '';
-          app.use(baseUrl + '/' + url, importantRouter);
-        });
-    }
   }
 
   /**
@@ -59,28 +41,18 @@ module.exports = () => {
    */
   function setupModulesRoutes() {
     modules.forEach(mod => {
-      if (!_.isFunction(mod.routes)) return;
       if (!_.isString(mod.prefix)) mod.prefix = '/' + mod.name;
+      const moduleApi = express.Router();
       const moduleRouter = express.Router();
-      mod.routes(moduleRouter);
-      app.use(baseUrl + mod.prefix, moduleRouter);
+      if (_.isFunction(mod.api)) {
+        mod.api(moduleApi);
+        api.use(mod.prefix, moduleApi);
+      }
+      if (_.isFunction(mod.routes)) {
+        mod.routes(moduleRouter);
+        router.use(mod.prefix, moduleRouter);
+      }
     });
-  }
-
-  /**
-   * Ending routes
-   */
-  function setupEndingRoutes() {
-    if (pathRoutes) {
-      const endingRouter = express.Router();
-      glob.sync('**/[^_]*.js', { cwd: pathRoutes })
-        .reverse().forEach(filename => {
-          let url = filename.replace(/.js$/, '');
-          require(pathRoutes + '/' + filename)(endingRouter, app);
-          if (url === 'index') url = '';
-          app.use(baseUrl + '/' + url, endingRouter);
-        });
-    }
   }
 
   /**
@@ -102,9 +74,7 @@ module.exports = () => {
   // Export app for use in other boot scripts
   return Promise.resolve()
     .then(initModules)
-    .then(setupImportantRoutes)
     .then(setupModulesRoutes)
-    .then(setupEndingRoutes)
     .then(listenUp)
     .return(app);
 

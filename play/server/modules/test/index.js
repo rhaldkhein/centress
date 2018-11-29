@@ -8,23 +8,23 @@ const centress = require('../../../../src');
 
 centress.module(exports, {
 
-  prefix: '/',
+  // prefix: '/',
   index: 2,
 
-  init: function (app) {
+  init: function (master) {
 
     let a = centress.get('module-foo');
     console.log(a);
 
-    app.get('/test/bar', (req, res) => {
+    master.app.get('/test/bar', (req, res) => {
       res.json({ test: 'bar' });
     });
 
   },
 
-  routes: function (router) {
+  api: function (apiRouter) {
 
-    router.get('/test/world', (req, res) => {
+    apiRouter.get('/test/world', (req, res) => {
       res.json({ test: 'world' });
     });
 

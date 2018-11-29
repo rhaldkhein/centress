@@ -2,7 +2,6 @@
 
 const centress = require('../../src');
 
-centress.set('baseUrl', '/api');
 centress.set('paths.modules', __dirname + '/features');
 
 // Overriding default module settings

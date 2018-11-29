@@ -24,9 +24,6 @@ module.exports = userConfig => {
     userConfig
   );
 
-  if (!config.paths.routes)
-    config.paths.routes = config.paths.root + '/routes';
-
   if (!config.paths.modules)
     config.paths.modules = config.paths.root + '/modules';
 
