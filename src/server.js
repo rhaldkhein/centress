@@ -42,13 +42,13 @@ module.exports = () => {
   function setupModulesRoutes() {
     modules.forEach(mod => {
       if (!_.isString(mod.prefix)) mod.prefix = '/' + mod.name;
-      const moduleApi = express.Router();
-      const moduleRouter = express.Router();
       if (_.isFunction(mod.api)) {
+        const moduleApi = express.Router();
         mod.api(moduleApi);
         api.use(mod.prefix, moduleApi);
       }
       if (_.isFunction(mod.routes)) {
+        const moduleRouter = express.Router();
         mod.routes(moduleRouter);
         router.use(mod.prefix, moduleRouter);
       }

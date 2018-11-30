@@ -24,16 +24,82 @@ const centress = require('centress')
 centress.boot(__dirname);
 ```
 
-Run with `node index.js` and the server should be up and running. When you visit `localhost:3000`, you'll be greeted with an error `Cannot GET /` :rage: &nbsp;... but don't panic! This means that `home` page is not handled yet.
+Run with `node index.js` and the server should be up and running. When you visit `localhost:3000`, you'll be greeted with an error `Cannot GET /` :rage: &nbsp;... but don't panic! That means its working and `home` page is not handled yet.
 
 #### Using Ready-Made Modules
 
-One of the main features of Centress . This microsite is bundled as a module and should be installable by `npm`. I've published a microsite module called `centress-hello` on npm that handles `/` page. Install it and restart server.
+One objective of Centress is to allow external ready-made modules of features or sections to be installed by `npm`. I've published a simple centress module called `centress-hello` on npm that handles `/` homepage automatically. Install it then restart server.
 
 `npm install centress-hello`
 
 Restart the server and you'll be greeted now with `Hello World` on `home` page.
 
+You can always use different Centress modules from npm for your each different sections/features of your application or just create your own custom Centress module with your business logic.
+
 ## Centress Module
 
-A centress module 
+A Centress module is just a normal node module but is automatically detected and use its functions and features after installing. Should be at least no setup or configuration to use it.
+
+#### Creating A Centress Module
+
+In order for Centress to detect that your module is a Centress module, write `centress.module(exports, options)` like the following code.
+
+```javascript
+// Import centress module
+const centress = require('centress');
+// Making this module a Centress module
+centress.module(exports, {});
+// Other export props and methods
+exports.otherProps = 'value';
+// ...
+```
+
+Though the above code tells that it's a Centress module, it doesn't really do anything yet. 
+
+**.module(exports, options)**
+
+Give meaning to your module by defining options. Let's say the following module has name of `test` in `package.json`.
+
+```javascript
+centress.module(exports, {
+  // Initialize your module
+  init: main => {
+    // Custom configuration provided user
+    main.config.foo ? 'Bar' : 'Baz';
+    // Express root `app`
+    main.app.use(bodyparser());
+    // Global default page router (Express router)
+    main.router.use(...);
+    // Global api router (Express router)
+    main.api.use(...);
+    // Native node http object
+    main.server
+  },
+  // Register page routes (Express router)
+  routes: pageRouter => {
+    // http://localhost:3000/test/hello
+    pageRouter.get('/hello', (req, res) => {
+      res.send('Hello World');
+    });
+    // more routes ...
+  },
+  // Register API endpoint (Express router)
+  api: endpointRouter => {
+    // http://localhost:3000/api/test/hello
+    endpointRouter.get('/hello', (req, res) => {
+      res.json({ hello: 'world' });
+    });
+    // more endpoints ...
+  }
+});
+```
+**Options:**
+
+| Name      | Type      | Description
+| :-        | :-        | :-
+| init      | function  | Use to initialize the module.
+| routes    | function  | Use to add page routes for the module.
+| api       | function  | Use to add API endpoints for the module.
+| index     | number    | Index order for the module. Index are used by Centress to sort the order of modules. The lower the number, the higher the priority.
+
+## Centress Object
