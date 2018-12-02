@@ -18,4 +18,4 @@ centress.set('modules.settings', {
 
 });
 
-centress.boot(__dirname);
+centress.boot();

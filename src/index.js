@@ -2,6 +2,8 @@
 
 const _ = require('lodash');
 const glob = require('glob');
+const callsite = require('callsite');
+const path = require('path');
 
 let userConfig = {};
 
@@ -48,14 +50,13 @@ exports.get = exports.module.get;
  * Boot up the server
  */
 
-exports.boot = (pathRoot) => {
+exports.boot = pathRoot => {
 
   // Mandatory options
   if (!_.isString(_.get(userConfig, 'paths.root'))) {
-    if (_.isString(pathRoot))
-      _.set(userConfig, 'paths.root', pathRoot);
-    else
-      throw new Error('Root path is required and must be string');
+    if (!_.isString(pathRoot))
+      pathRoot = path.dirname(callsite()[1].getFileName());
+    _.set(userConfig, 'paths.root', pathRoot);
   }
 
   // Merge default and user config
