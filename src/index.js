@@ -102,3 +102,12 @@ exports.boot = pathRoot => {
     .catch(error);
 
 };
+
+/**
+ * Include the root package.json as a module.
+ * Design for developing centress module.
+ */
+
+exports.mock = () => {
+
+};
