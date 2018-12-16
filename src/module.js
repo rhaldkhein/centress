@@ -16,16 +16,23 @@ let modules = {}; // All modules pool
 let centresses = {}; // All centress modules pool
 
 
-// Init and attach module
+/**
+ * Init and attach module
+ */
 function init(name, mod, centress, config) {
+  // Must be a centress module
+  if (!_.isFunction(mod.__CM__)) return;
   // Resolve settings
   let ctrs = _.assign(
     mod.__CM__(centress),
     _.pick(config.modules.settings[name], initSettingsKeys)
   );
+  // Attach name
   ctrs.name = name;
+  // Set default index
   if (_.isNil(ctrs.index))
     ctrs.index = Number.MAX_SAFE_INTEGER * 0.1;
+  // Attach centress module
   if (!ctrs.disabled) {
     if (modules[name])
       throw new InternalError(
@@ -50,7 +57,9 @@ module.exports = (context, options) => {
   };
 };
 
-// Retrieve a centress module instance from local or mother
+/**
+ * Retrieve a centress module instance from local or mother
+ */
 module.exports.get = name => {
   // Try to get from local pool
   let mod = modules[name];
@@ -65,10 +74,14 @@ module.exports.get = name => {
   return mod;
 };
 
-// Retrieve all module instances
+/**
+ * Retrieve all module instances
+ */
 module.exports.getAll = () => _.clone(centresses);
 
-// Scan and boot all centress modules and attach to modules object
+/**
+ * Scan and boot all centress modules and attach to modules object
+ */
 module.exports.boot = centress => {
 
   isMother = true;
@@ -83,6 +96,9 @@ module.exports.boot = centress => {
     let prodDeps = pkg.dependencies || {};
     let devDeps = pkg.devDependencies || {};
     depsPkg = _.merge(depsPkg, prodDeps, devDeps);
+    // Add the working module as dependency
+    if (config.__mock__)
+      init(pkg.name, require(pathRoot + '/' + pkg.main), centress, config);
   } catch (error) {
     // Nothing to do
   }
@@ -101,20 +117,14 @@ module.exports.boot = centress => {
   // Scan NPM modules
   for (let key in depsPkg) {
     let dep = require(pathRoot + '/node_modules/' + key);
-    if (_.isFunction(dep.__CM__)) {
-      // It's a Centress module
-      init(key, dep, centress, config);
-    }
+    init(key, dep, centress, config);
   }
 
   // Scan local modules
   if (!_.isEmpty(depsLoc)) {
     for (let key in depsLoc) {
       let dep = require(depsLoc[key] + '/' + key);
-      if (_.isFunction(dep.__CM__)) {
-        // It's a Centress module
-        init(key, dep, centress, config);
-      }
+      init(key, dep, centress, config);
     }
   }
 

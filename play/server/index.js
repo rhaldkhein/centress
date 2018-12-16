@@ -5,17 +5,19 @@ const centress = require('../../src');
 centress.set('paths.modules', __dirname + '/features');
 
 // Overriding default module settings
-centress.set('modules.settings', {
+// centress.set('modules.settings', {
 
-  // 'module-test': {
-  //   prefix: '/new_pref',
-  //   index: 1
-  // }
+// 'module-test': {
+//   prefix: '/new_pref',
+//   index: 1
+// }
 
-  // 'centress-mongoose': {
-  //   config: { database: 'centress' }
-  // }
+// 'centress-mongoose': {
+//   config: { database: 'centress' }
+// }
 
-});
+// });
+
+centress.mock();
 
 centress.boot();
