@@ -1,12 +1,10 @@
 {
   "name": "centress",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Modular monolith framework with express, mongoose and more",
   "main": "src/index.js",
   "scripts": {
-    "master": "nodemon play/server",
-    "alpha": "nodemon play/alpha",
-    "beta": "nodemon play/beta",
+    "master": "node play/server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
