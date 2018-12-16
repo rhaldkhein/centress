@@ -25,9 +25,10 @@ function extensions(app) {
  * Set single user configuration
  */
 
-exports.set = (path, value) => {
+function set(path, value) {
   _.set(userConfig, path, value);
-};
+}
+exports.set = set;
 
 /**
  * Export internal libraries
@@ -83,22 +84,24 @@ exports.boot = pathRoot => {
   // Start database and express server
   const server = require('./server');
 
-  /**
-   * Error handler
-   */
-
+  // Error handler
   function error(err) {
     server.error(err);
     logger.error(err);
   }
 
-  /**
-   * Boot sequence
-   */
-
+  // Boot sequence
   Promise.resolve()
     .then(server)
     .then(extensions)
     .catch(error);
 
+};
+
+/**
+ * Set mock flag. For developing centress module.
+ */
+
+exports.mock = () => {
+  set('__mock__', true);
 };
