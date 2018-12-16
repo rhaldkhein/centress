@@ -1,12 +1,13 @@
 # Centress
 
-A modular monolithic Express framework for faster and maintainable web application development.
+A modular monolithic Express framework for faster and maintainable web application.
 
 #### Objectives
 
 - :white_check_mark: &nbsp; Enforce modular design
+- :white_check_mark: &nbsp; Dependecy injection
 - :white_check_mark: &nbsp; Plug and play modules
-- :white_check_mark: &nbsp; Section / feature as a module
+- :white_check_mark: &nbsp; Area or feature as a module
 - :white_check_mark: &nbsp; Zero configuration
 - :black_square_button: &nbsp; Easily migrate to microservices
 
@@ -28,13 +29,13 @@ Run with `node index.js` and the server should be up and running. When you visit
 
 #### Using Ready-Made Modules
 
-One objective of Centress is to allow external ready-made modules of features or sections to be installed by `npm`. I've published a simple centress module called `centress-hello` on npm that handles `/` homepage automatically. Install it then restart server.
+One objective of Centress is to allow external ready-made module of features or areas in your application to be installed by `npm`. I've published a simple centress module called `centress-hello` on npm that handles `/` homepage automatically. Install it then restart server.
 
 `npm install centress-hello`
 
 Restart the server and you'll be greeted now with `Hello World` on `home` page.
 
-You can always use different Centress modules from npm for each and every different sections/features in your application, or just create your own custom Centress module with your business logic.
+You can always use different Centress modules from npm for each different areas/features in your application, or just create your own custom Centress module with your domain logic.
 
 ## Centress Module
 
@@ -42,7 +43,7 @@ A Centress module is just a normal node module but is automatically detected and
 
 #### Creating A Centress Module
 
-In order for Centress to detect that your module is a Centress module, write `centress.module(exports, options)` like the following code.
+In order for Centress to detect that your module is a Centress module, write `centress.module(exports, options)` like in the following code.
 
 ```javascript
 // Import centress module
@@ -58,24 +59,28 @@ Though the above code tells that it's a Centress module, it doesn't really do an
 
 **.module(exports, options)**
 
-Give meaning to your module by defining options. Let's say the following module has name of `test` in `package.json`.
+Give meaning to your module by defining options. Let's say the name of the following module is `test` in `package.json` file.
 
 ```javascript
 centress.module(exports, {
-  // Initialize your module
+
+  // Initialize your module with dependecy injection
   init: main => {
     // Custom configuration provided user
     main.config.foo ? 'Bar' : 'Baz';
-    // Express root `app`
+    // Express root APP
     main.app.use(bodyparser());
-    // Global default page router (Express router)
+    // Global default PAGE router (Express router) for all modules
     main.router.use(...);
-    // Global api router (Express router)
+    // Global API router (Express router) for all modules
     main.api.use(...);
     // Native node http object
     main.server
   },
-  // Register page routes (Express router)
+
+  // Register PAGE routes (Express router).
+  // The `pageRouter` is ony for this module,
+  // and is different from above router in init method
   routes: pageRouter => {
     // http://localhost:3000/test/hello
     pageRouter.get('/hello', (req, res) => {
@@ -83,7 +88,9 @@ centress.module(exports, {
     });
     // more routes ...
   },
-  // Register API endpoint (Express router)
+
+  // Register API endpoint (Express router).
+  // The `endpointRouter` is also only for this module
   api: endpointRouter => {
     // http://localhost:3000/api/test/hello
     endpointRouter.get('/hello', (req, res) => {
@@ -121,7 +128,7 @@ Require built-in Cenrtress libraries. Eg. `centress.lib('logger/file')`.
 Require other Centress modules.
 
 ```javascript
-const userModule = centress.get('centress-user');
+const userModule = centress.get('user-module');
 const foo = userModule.getById('ABC123');
 ```
 
@@ -130,6 +137,20 @@ const foo = userModule.getById('ABC123');
 Use to create a Centress module. See above for how to create a Centress module.
 
 ## Configuration
+
+Configuration must be set before calling `centress.boot()` method.
+
+```javascript
+// Writing config
+const centress = require('centress');
+centress.set('server.port', 8080);
+// more sets ...
+centress.boot();
+
+// Accessing config
+const { config } = require('centress');
+const isProd = config.production ? 'YES' : 'NO';
+```
 
 **Writable**
 
@@ -140,7 +161,7 @@ Use to create a Centress module. See above for how to create a Centress module.
 | server.host         | string    | `localhost`       | Host for Express server
 | server.port         | number    | `3000`            | Port for Express server
 | paths.root          | string    | boot caller file  | 
-| paths.modules       | string    | `/modules`        | Own local custom modules without `package.json`
+| paths.modules       | string    | `/modules`        | Own local custom modules without using `package.json`
 | express.settings    | object    | `{}`              | Key/value pair for Express settings. http://expressjs.com/en/4x/api.html#app.set
 | log4js.appenders    | object    | `{console, file}` | Log4js appenders config. Do not replace the whole object.
 | log4js.categories   | object    | `{default, file}` | Log4js categories config. Do not replace the whole object.
@@ -153,9 +174,35 @@ Use to create a Centress module. See above for how to create a Centress module.
 | production      | boolean   | `true` if `NODE_ENV === 'production'` otherwise `false`. Aliased with `prod`.
 | development     | boolean   | Negation for production. Aliased with `dev`.
 
-#### Accessing Configuration
+## Custom Local Modules
 
-```javascript
-const { config } = require('centress');
-const isProd = config.production ? 'YES' : 'NO';
+You can also create your own custom module without using or registering it to `package.json`. By default, Centress will use all modules inside `modules` directory which can also be changed by setting `paths.modules` configuration.
+
+**File Structure**
+
 ```
+project
+│   main.js
+│   package.json    
+│
+└── modules
+│   └── security
+│   │   └── controllers
+│   │   │   crypto.js (private)
+│   │   │   auth.js (private)
+│   │   │   index.js (public centress module, expose methods here)
+│   │  
+│   └── user
+│   │   └── models
+│   │   └── controllers
+│   │   │   index.js
+│   │  
+│   └── otherModule  
+│   └── ...
+└── otherFolder
+└── ...
+```
+
+## License
+
+MIT
