@@ -9,36 +9,29 @@ const mapErrNameCode = {
   'ValidationError': InternalError.VALIDATION
 };
 
-let _app;
-let _config;
+let _master;
 
 centress.module(exports, {
 
-  index: Number.MAX_SAFE_INTEGER - 999990,
+  index: Number.NaN,
 
-  init: (app, config) => {
-    _app = app;
-    _config = config;
+  init: master => {
+    _master = master;
   },
 
-  routes: () => {
+  api: () => {
 
     const logger = centress.lib('logger/file');
 
-    let expressStatics = _config.folders || [];
-    expressStatics.forEach(elem => {
-      _app.use(express.static(elem.path, elem.options));
-    });
-
     // Flush composed data
-    _app.use((req, res) => {
+    _master.api.use((req, res) => {
       if (res.locals.__data)
         return res.success(res.locals.__data);
       throw new HttpError(HttpError.NOT_FOUND);
     });
 
     // Catch and flush error
-    _app.use((err, req, res, next) => {
+    _master.api.use((err, req, res, next) => {
       // Convert other errors to local error
       if (err instanceof BaseError) {
         res.error(err);
@@ -54,6 +47,15 @@ centress.module(exports, {
           err
         );
       }
+    });
+
+  },
+
+  routes: () => {
+
+    let expressStatics = _master.config.folders || [];
+    expressStatics.forEach(elem => {
+      _master.router.use(express.static(elem.path, elem.options));
     });
 
   }

@@ -13,7 +13,7 @@ module.exports = config => {
   config.logLevel = 'all';
 
   // Base url
-  config.baseUrl = '';
+  config.apiBaseUrl = '/api';
 
   // Settings for each modules
   config.modules = { settings: {} };

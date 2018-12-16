@@ -7,10 +7,10 @@ centress.module(exports, {
 
   index: Number.MIN_SAFE_INTEGER + 999990,
 
-  init: app => {
+  init: master => {
     // json and form-urlencoded
-    app.use(bodyparser.json());
-    app.use(
+    master.app.use(bodyparser.json());
+    master.app.use(
       bodyparser.urlencoded({
         extended: true
       })

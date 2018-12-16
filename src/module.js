@@ -27,6 +27,11 @@ function init(name, mod, centress, config) {
   if (_.isNil(ctrs.index))
     ctrs.index = Number.MAX_SAFE_INTEGER * 0.1;
   if (!ctrs.disabled) {
+    if (modules[name])
+      throw new InternalError(
+        InternalError.MODULE_CONFLICT,
+        `Conflict module "${name}". Rename or remove the module to continue.`
+      );
     centresses[name] = ctrs;
     modules[name] = mod;
   }
