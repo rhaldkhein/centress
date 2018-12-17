@@ -29,8 +29,8 @@ module.exports = () => {
     let inits = [];
     modules.forEach(mod => {
       if (_.isFunction(mod.init)) {
-        let settings = config.modules.settings[mod.name] || {};
-        inits.push(mod.init({ app, api, router, server, config: settings.config || {} }));
+        let modConfig = config.modules[mod.name] || {};
+        inits.push(mod.init({ app, api, router, server, settings: modConfig.settings || {} }));
       }
     });
     return Promise.all(inits);

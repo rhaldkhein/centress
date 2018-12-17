@@ -53,7 +53,7 @@ centress.module(exports, {
 
   routes: () => {
 
-    let expressStatics = _master.config.folders || [];
+    let expressStatics = _master.settings.folders || [];
     expressStatics.forEach(elem => {
       _master.router.use(express.static(elem.path, elem.options));
     });
