@@ -10,4 +10,7 @@ module.exports = config => {
   // Modules, master will set if not specified
   config.paths.modules = null;
 
+  // Module configs
+  config.paths.moduleConfigs = null;
+
 };

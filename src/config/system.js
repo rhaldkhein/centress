@@ -15,7 +15,7 @@ module.exports = config => {
   // Base url
   config.apiBaseUrl = '/api';
 
-  // Settings for each modules
-  config.modules = { settings: {} };
+  // Config for each modules
+  config.modules = {};
 
 };

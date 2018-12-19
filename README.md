@@ -29,7 +29,7 @@ Run with `node index.js` and the server should be up and running. When you visit
 
 #### Using Ready-Made Modules
 
-One objective of Centress is to allow external ready-made module of features or areas in your application to be installed by `npm`. I've published a simple centress module called `centress-hello` on npm that handles `/` homepage automatically. Install it then restart server.
+One objective of Centress is to allow external ready-made module of features or areas in your application to be installed by `npm`. I've published a simple centress module called [`centress-hello`](https://www.npmjs.com/package/centress-hello) on npm that handles `/` homepage automatically. Install it then restart server.
 
 `npm install centress-hello`
 
@@ -46,7 +46,6 @@ A Centress module is just a normal node module but is automatically detected and
 In order for Centress to detect that your module is a Centress module, write `centress.module(exports, options)` like in the following code.
 
 ```javascript
-// Import centress module
 const centress = require('centress');
 // Making this module a Centress module
 centress.module(exports, {});
@@ -67,7 +66,7 @@ centress.module(exports, {
   // Initialize your module with dependecy injection
   init: main => {
     // Custom configuration provided user
-    main.config.foo ? 'Bar' : 'Baz';
+    main.settings.foo ? 'Bar' : 'Baz';
     // Express root APP
     main.app.use(bodyparser());
     // Global default PAGE router (Express router) for all modules
@@ -154,18 +153,19 @@ const isProd = config.production ? 'YES' : 'NO';
 
 **Writable**
 
-| Path                | Type      | Default           | Description
-| :-                  | :-        | :-                | :-
-| apiBaseUrl          | string    | `/api`            | Base URL for API routes in modules
-| logLevel            | string    | `all`             | Log4js log level
-| server.host         | string    | `localhost`       | Host for Express server
-| server.port         | number    | `3000`            | Port for Express server
-| paths.root          | string    | boot caller file  | 
-| paths.modules       | string    | `/modules`        | Own local custom modules without using `package.json`
-| express.settings    | object    | `{}`              | Key/value pair for Express settings. http://expressjs.com/en/4x/api.html#app.set
-| log4js.appenders    | object    | `{console, file}` | Log4js appenders config. Do not replace the whole object.
-| log4js.categories   | object    | `{default, file}` | Log4js categories config. Do not replace the whole object.
-| log4js.pm2          | boolean   | `true`            | Log4js use PM2
+| Path                | Type      | Default               | Description
+| :-                  | :-        | :-                    | :-
+| apiBaseUrl          | string    | `/api`                | Base URL for API routes in modules
+| logLevel            | string    | `all`                 | Log4js log level
+| server.host         | string    | `localhost`           | Host for Express server
+| server.port         | number    | `3000`                | Port for Express server
+| paths.root          | string    | boot caller dir       | Absolute path to root directory
+| paths.modules       | string    | `<root>/modules`      | Absolute Path to own local custom modules without using `package.json`
+| paths.moduleConfigs | string    | `<root>/config`       | Absolute Path to individual module config
+| express.settings    | object    | `{}`                  | Key/value pair for Express settings. http://expressjs.com/en/4x/api.html#app.set
+| log4js.appenders    | object    | `{console, file}`     | Log4js appenders config. Do not replace the whole object.
+| log4js.categories   | object    | `{default, file}`     | Log4js categories config. Do not replace the whole object.
+| log4js.pm2          | boolean   | `true`                | Log4js use PM2
 
 **Read Only**
 
@@ -173,6 +173,39 @@ const isProd = config.production ? 'YES' : 'NO';
 | :-              | :-        | :-
 | production      | boolean   | `true` if `NODE_ENV === 'production'` otherwise `false`. Aliased with `prod`.
 | development     | boolean   | Negation for production. Aliased with `dev`.
+
+#### Config Per Module
+
+All possible configs are shown in the following code.
+
+```javascript
+const centress = require('centress');
+centress.set('modules', {
+  // A module
+  'centress-mongoose': {
+    // Loading index for ordering
+    index: 1,
+    // This settings will be passed to the module
+    settings: {
+      database: 'dbname',
+      user: 'foo',
+      password: 'abc123'
+    }
+  },
+  // Another module
+  'sample-module': {
+    // Override URL prefix for Page routes and API endpoints
+    prefix: '/sample',
+    // Load this module after above module `centress-mongoose`
+    index: 2,
+    // Disable or enable module
+    disabled: true,
+    settings: {...}
+  }
+  // more module settings ...
+});
+centress.boot();
+```
 
 ## Custom Local Modules
 

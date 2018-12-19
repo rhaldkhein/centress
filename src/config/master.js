@@ -27,6 +27,9 @@ module.exports = userConfig => {
   if (!config.paths.modules)
     config.paths.modules = config.paths.root + '/modules';
 
+  if (!config.paths.moduleConfigs)
+    config.paths.moduleConfigs = config.paths.root + '/config';
+
   if (!config.log4js.appenders.file.filename)
     config.log4js.appenders.file.filename = `${config.paths.root}/logs/${pkg.name}.log`;
 

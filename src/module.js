@@ -5,7 +5,7 @@ const glob = require('glob');
 const path = require('path');
 const InternalError = require('./libs/error/internal');
 
-const initSettingsKeys = ['disabled', 'index', 'prefix'];
+const initModuleConfigKeys = ['disabled', 'index', 'prefix'];
 
 let isMother = false;
 let motherCentress;
@@ -22,10 +22,10 @@ let centresses = {}; // All centress modules pool
 function init(name, mod, centress, config) {
   // Must be a centress module
   if (!_.isFunction(mod.__CM__)) return;
-  // Resolve settings
+  // Resolve individual module config
   let ctrs = _.assign(
     mod.__CM__(centress),
-    _.pick(config.modules.settings[name], initSettingsKeys)
+    _.pick(config.modules[name], initModuleConfigKeys)
   );
   // Attach name
   ctrs.name = name;
@@ -89,6 +89,13 @@ module.exports.boot = centress => {
   let config = global.__CENTRESS__.config;
   let configPath = config.paths;
   let pathRoot = configPath.root;
+  let pathModConfigs = configPath.moduleConfigs;
+  // Retrieve module config from directory
+  glob.sync('*.js', { cwd: pathModConfigs }).forEach(filename => {
+    let name = path.basename(filename, '.js');
+    // if (config.modules[name]) { // Show config override warning }
+    config.modules[name] = require(pathModConfigs + '/' + filename);
+  });
 
   // Try to get dependencies names from package.json
   try {
