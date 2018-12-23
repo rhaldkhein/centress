@@ -5,7 +5,7 @@ const glob = require('glob');
 const path = require('path');
 const InternalError = require('./libs/error/internal');
 
-const initModuleConfigKeys = ['disabled', 'index', 'prefix'];
+const moduleConfigKeys = ['disabled', 'index', 'prefix'];
 
 let isMother = false;
 let motherCentress;
@@ -25,7 +25,7 @@ function init(name, mod, centress, config) {
   // Resolve individual module config
   let ctrs = _.assign(
     mod.__CM__(centress),
-    _.pick(config.modules[name], initModuleConfigKeys)
+    _.pick(config.modules[name], moduleConfigKeys)
   );
   // Attach name
   ctrs.name = name;
@@ -56,6 +56,11 @@ module.exports = (context, options) => {
     return options;
   };
 };
+
+/**
+ * Export config keys
+ */
+module.exports.configKeys = moduleConfigKeys;
 
 /**
  * Retrieve a centress module instance from local or mother

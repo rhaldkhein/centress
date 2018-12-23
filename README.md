@@ -176,7 +176,7 @@ const isProd = config.production ? 'YES' : 'NO';
 
 #### Config Per Module
 
-All possible configs are shown in the following code.
+Sample config per module are shown in the following code and to disable a module set `disabled: true`. All modules will always have config `index`, `prefix`, `disabled`.
 
 ```javascript
 const centress = require('centress');
@@ -185,12 +185,10 @@ centress.set('modules', {
   'centress-mongoose': {
     // Loading index for ordering
     index: 1,
-    // This settings will be passed to the module
-    settings: {
-      database: 'dbname',
-      user: 'foo',
-      password: 'abc123'
-    }
+    // This configs will be passed to the module
+    database: 'dbname',
+    user: 'foo',
+    password: 'abc123'
   },
   // Another module
   'sample-module': {
@@ -198,13 +196,22 @@ centress.set('modules', {
     prefix: '/sample',
     // Load this module after above module `centress-mongoose`
     index: 2,
-    // Disable or enable module
-    disabled: true,
-    settings: {...}
+    // Disable or enable the module
+    disabled: true
   }
-  // more module settings ...
+  // more config ...
 });
 centress.boot();
+```
+
+Per module config can also be set using files under `/config` directory like `/config/<module_name>.js`.
+
+```javascript
+module.exports = {
+  prefix: '/sample',
+  index: 10,
+  foo: 'bar'
+};
 ```
 
 ## Custom Local Modules
@@ -218,23 +225,79 @@ project
 │   main.js
 │   package.json    
 │
+└── config
+│   │   security.js
+│   │   user.js
+│   │   otherModule.js
+│   |   ...
+│
 └── modules
 │   └── security
 │   │   └── controllers
 │   │   │   crypto.js (private)
 │   │   │   auth.js (private)
 │   │   │   index.js (public centress module, expose methods here)
+│   │   │   ...
 │   │  
 │   └── user
 │   │   └── models
 │   │   └── controllers
 │   │   │   index.js
+│   │   │   ...
 │   │  
 │   └── otherModule  
 │   └── ...
 └── otherFolder
 └── ...
 ```
+
+## Built-in Modules
+
+View all built-in modules [here](https://github.com/rhaldkhein/centress/tree/master/src/modules). All modules are enabled by default, to disable set `disabled: true`.
+
+#### centress-parser
+
+Does some request parsing and auditing.
+
+| Config          | Type      | Default   | Description
+| :-              | :-        | :-        | :-
+| index           | number    | `-9999`   | Loading index (should be first in line)
+| helmet          | boolean   | `true`    | Enable/disable helmet
+| helmetConfig    | object    | `null`    | Helmet's config
+| json            | boolean   | `true`    | Parse application/json body
+| urlencoded      | boolean   | `true`    | Parse application/x-www-form-urlencoded body
+
+#### centress-health
+
+Handles GET `/health`, responding `200 OK` immediately.
+
+| Config          | Type      | Default   | Description
+| :-              | :-        | :-        | :-
+| index           | number    | `-9998`   | After `centress-parser`
+
+#### centress-mongoose
+
+Responsible for connecting to MongoDB database using Mongoose.
+
+| Config            | Type      | Default | Description
+| :-                | :-        | :- | :-
+| index             | number    | `-9997` | After `centress-health`
+| user              | string    | `''` | 
+| password          | string    | `''` | 
+| database          | string    | `''` | Database name
+| host              | string    | `localhost` | 
+| port              | number    | `27017` | 
+| validateOnUpdate  | boolean   | `true` | Run validation on update
+| options           | object    | `{ useNewUrlParser: true }` | 
+
+#### centress-response
+
+| Config            | Type          | Default | Description
+| :-                | :-            | :- | :-
+| index             | integer       | `NaN` | Should be last in line
+| staticDirs        | array(object) | `[]` | Array of public static directories
+
+[Express static](http://expressjs.com/en/4x/api.html#express.static)
 
 ## License
 

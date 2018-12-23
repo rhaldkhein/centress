@@ -30,27 +30,30 @@ function validateOnUpdate(schema) {
 
 centress.module(exports, {
 
-  index: Number.MIN_SAFE_INTEGER + 999992,
+  index: -9997,
 
-  init: master => {
+  init: main => {
 
-    _.defaults(master.settings, defaults);
-
-    if (_.isEmpty(master.settings.database)) return;
-
-    if (master.settings.validateOnUpdate) mongoose.plugin(validateOnUpdate);
+    _.defaults(main.config, defaults);
 
     const logger = centress.lib('logger/console');
 
-    let host = master.settings.host + (master.settings.port ? ':' + master.settings.port : ''),
-      credentials = master.settings.user ? master.settings.user + ':' + master.settings.password + '@' : '',
+    if (_.isEmpty(main.config.database)) {
+      logger.info(`Database: skipped as not configured`)
+      return;
+    }
+
+    if (main.config.validateOnUpdate) mongoose.plugin(validateOnUpdate);
+
+    let host = main.config.host + (main.config.port ? ':' + main.config.port : ''),
+      credentials = main.config.user ? main.config.user + ':' + main.config.password + '@' : '',
       url = 'mongodb://' + credentials;
 
     // Append host
     url += host;
 
     // Append database name
-    url += '/' + master.settings.database;
+    url += '/' + main.config.database;
 
     // Assign default promise to mongoose
     mongoose.Promise = global.Promise;
@@ -58,7 +61,7 @@ centress.module(exports, {
     // Initiate connection
     logger.debug(`Database: connecting to ${host}`);
     return mongoose
-      .connect(url, master.settings.options)
+      .connect(url, main.config.options)
       .then(() => logger.debug(`Database: connected`));
   },
 

@@ -10,9 +10,7 @@ centress.set('modules', {
   'module-test': {
     prefix: '/new_pref',
     index: 1,
-    settings: {
-      bbb: 'bbb'
-    }
+    bbb: 'bbb'
   }
 
   // 'centress-mongoose': {

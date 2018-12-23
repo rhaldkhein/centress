@@ -30,7 +30,13 @@ module.exports = () => {
     modules.forEach(mod => {
       if (_.isFunction(mod.init)) {
         let modConfig = config.modules[mod.name] || {};
-        inits.push(mod.init({ app, api, router, server, settings: modConfig.settings || {} }));
+        inits.push(mod.init({
+          app,
+          api,
+          router,
+          server,
+          config: _.omit(modConfig, moduleFactory.configKeys)
+        }));
       }
     });
     return Promise.all(inits);
