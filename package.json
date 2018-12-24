@@ -1,7 +1,7 @@
 {
   "name": "centress",
-  "version": "0.2.0",
-  "description": "Modular monolith framework with express, mongoose and more",
+  "version": "0.2.1",
+  "description": "A tiny modular monolith framework for Express",
   "main": "src/index.js",
   "scripts": {
     "master": "node play/server",
