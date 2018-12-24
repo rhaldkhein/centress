@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-  aaa: 'aaa'
+  // database: 'bar'
 };

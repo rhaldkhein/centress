@@ -4,7 +4,7 @@ const centress = require('..');
 
 centress.module(exports, {
 
-  index: Number.MIN_SAFE_INTEGER + 999991,
+  index: -9998,
 
   init: master => {
     master.app.get('/health', (req, res) => {

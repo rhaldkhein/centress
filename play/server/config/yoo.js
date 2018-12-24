@@ -1,7 +1,5 @@
 'use strict';
 
 module.exports = {
-  settings: {
-    foo: 'bar'
-  }
+  foo: 'bar'
 };

@@ -12,7 +12,7 @@ centress.module(exports, {
   index: 2,
 
   init: function (master) {
-    console.log('B', master.settings);
+    console.log('B', master.config);
 
     let a = centress.get('module-foo');
     console.log(a);

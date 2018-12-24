@@ -2,14 +2,15 @@
 
 A modular monolithic Express framework for faster and maintainable web application.
 
-#### Objectives
+#### Features
 
-- :white_check_mark: &nbsp; Enforce modular design
-- :white_check_mark: &nbsp; Dependecy injection
+- :white_check_mark: &nbsp; Modular design
 - :white_check_mark: &nbsp; Plug and play modules
 - :white_check_mark: &nbsp; Area or feature as a module
-- :white_check_mark: &nbsp; Zero configuration
-- :black_square_button: &nbsp; Easily migrate to microservices
+- :white_check_mark: &nbsp; Dependency injection
+- :white_check_mark: &nbsp; Zero setup / configuration
+- :white_check_mark: &nbsp; Easily migrate to microservices
+- :white_check_mark: &nbsp; Scalable / extensible
 
 #### Installation
 
@@ -22,7 +23,7 @@ Create main file `index.js` next to `package.json` and append the following code
 ```javascript
 const centress = require('centress')
 // Start centress server
-centress.boot(__dirname);
+centress.boot();
 ```
 
 Run with `node index.js` and the server should be up and running. When you visit `localhost:3000`, you'll be greeted with an error `Cannot GET /` :rage: &nbsp;... but don't panic! That means it's working and `home` page is not handled yet.
@@ -62,11 +63,11 @@ Give meaning to your module by defining options. Let's say the name of the follo
 
 ```javascript
 centress.module(exports, {
-
+  
   // Initialize your module with dependecy injection
   init: main => {
     // Custom configuration provided user
-    main.settings.foo ? 'Bar' : 'Baz';
+    main.config.foo ? 'Bar' : 'Baz';
     // Express root APP
     main.app.use(bodyparser());
     // Global default PAGE router (Express router) for all modules
@@ -97,6 +98,11 @@ centress.module(exports, {
     });
     // more endpoints ...
   }
+
+  // Optional. Ordering index. Defaults to last in middleware chain
+  index: 0
+  // 0  means first in the chain
+
 });
 ```
 **Options:**
@@ -176,7 +182,7 @@ const isProd = config.production ? 'YES' : 'NO';
 
 #### Config Per Module
 
-All possible configs are shown in the following code.
+Sample config per module are shown in the following code and to disable a module set `disabled: true`. All modules will always have config `index`, `prefix`, `disabled`.
 
 ```javascript
 const centress = require('centress');
@@ -185,12 +191,10 @@ centress.set('modules', {
   'centress-mongoose': {
     // Loading index for ordering
     index: 1,
-    // This settings will be passed to the module
-    settings: {
-      database: 'dbname',
-      user: 'foo',
-      password: 'abc123'
-    }
+    // This configs will be passed to the module
+    database: 'dbname',
+    user: 'foo',
+    password: 'abc123'
   },
   // Another module
   'sample-module': {
@@ -198,13 +202,22 @@ centress.set('modules', {
     prefix: '/sample',
     // Load this module after above module `centress-mongoose`
     index: 2,
-    // Disable or enable module
-    disabled: true,
-    settings: {...}
+    // Disable or enable the module
+    disabled: true
   }
-  // more module settings ...
+  // more config ...
 });
 centress.boot();
+```
+
+Per module config can also be set using files under `/config` directory like `/config/<module_name>.js`.
+
+```javascript
+module.exports = {
+  prefix: '/sample',
+  index: 10,
+  foo: 'bar'
+};
 ```
 
 ## Custom Local Modules
@@ -218,22 +231,182 @@ project
 │   main.js
 │   package.json    
 │
+└── config
+│   │   security.js
+│   │   user.js
+│   │   otherModule.js
+│   |   ...
+│
 └── modules
 │   └── security
 │   │   └── controllers
 │   │   │   crypto.js (private)
 │   │   │   auth.js (private)
 │   │   │   index.js (public centress module, expose methods here)
+│   │   │   ...
 │   │  
 │   └── user
 │   │   └── models
 │   │   └── controllers
 │   │   │   index.js
+│   │   │   ...
 │   │  
 │   └── otherModule  
 │   └── ...
 └── otherFolder
 └── ...
+```
+
+## Built-in Modules
+
+View all built-in modules [here](https://github.com/rhaldkhein/centress/tree/master/src/modules). All modules are enabled by default, to disable set `disabled: true`.
+
+#### centress-parser
+
+Does some request parsing and auditing.
+
+| Config          | Type      | Default   | Description
+| :-              | :-        | :-        | :-
+| index           | number    | `-9999`   | Loading index (should be first in line)
+| helmet          | boolean   | `true`    | Enable/disable helmet
+| helmetConfig    | object    | `null`    | Helmet's config
+| json            | boolean   | `true`    | Parse application/json body
+| urlencoded      | boolean   | `true`    | Parse application/x-www-form-urlencoded body
+
+#### centress-health
+
+Handles GET `/health`, responding `200 OK` immediately.
+
+| Config          | Type      | Default   | Description
+| :-              | :-        | :-        | :-
+| index           | number    | `-9998`   | After `centress-parser`
+
+#### centress-mongoose
+
+Responsible for connecting to MongoDB database using Mongoose.
+
+| Config            | Type      | Default | Description
+| :-                | :-        | :- | :-
+| index             | number    | `-9997` | After `centress-health`
+| user              | string    | `''` | 
+| password          | string    | `''` | 
+| database          | string    | `''` | Database name
+| host              | string    | `localhost` | 
+| port              | number    | `27017` | 
+| validateOnUpdate  | boolean   | `true` | Run validation on update
+| options           | object    | `{ useNewUrlParser: true }` | 
+
+#### centress-response
+
+Last in middleware/module chain. Flush payloads written by `res.data()`. Also responsible for defining [static files serving](http://expressjs.com/en/4x/api.html#express.static).
+
+| Config            | Type            | Default | Description
+| :-                | :-              | :- | :-
+| index             | integer         | `NaN` | Should be last in line
+| staticDirs        | array (object)  | `[]` | Array of public static directories
+
+```javascript
+{
+  staticDirs: [
+    { path: '/static' },
+    { path: '/public', options: { maxAge: 5000 } }
+  ]
+}
+```
+
+## Extensions
+
+**res.success(payload[, code = 'OK'])**
+
+Immidiately send success json response with code and payload.
+
+```javascript
+endpointRouter.get('/foo', (req, res) => {
+  res.success({ foo: 'bar' });
+  // { success: true, code: 'OK', payload: { foo:'bar' } }
+});
+```
+
+**res.error(err[, payload])**
+
+Immidiately send error json response.
+
+```javascript
+const centress = require('centress');
+const HttpError = centress.lib('error/http');
+endpointRouter.get('/foo_error', (req, res) => {
+  res.error(new HttpError(HttpError.BAD_REQUEST));
+  // { error: true, code: 'BAD_REQUEST', payload: { name: 'HttpError', ... } }
+});
+```
+
+**res.data(key, value)**
+
+Write payloads to response for `centress-response` to flush at the end of chain.
+
+```javascript
+// In `user` module
+endpointRouter.get('/foo', (req, res) => {
+  res.data('user', { id: 'abc123', name: 'Foo'});
+});
+
+// In `post` module
+endpointRouter.get('/foo', (req, res) => {
+  res.data('posts', [{id: 'p1', title: 'Bar'}, {id: 'p2', title: 'Baz'}]);
+});
+
+// `centress-response` will flush the following payload
+{
+  success: true,
+  code: 'OK',
+  payload: {
+    user: { id: 'abc123', name: 'Foo'},
+    posts: [{id: 'p1', title: 'Bar'}, {id: 'p2', title: 'Baz'}]
+  }
+}
+```
+
+## Libs
+
+Require built-in libs using `centress.lib('logger/file')`
+
+#### Errors
+
+Check out all codes [here](https://github.com/rhaldkhein/centress/tree/master/src/libs/error). Available errors are `error/http`, `error/internal`.
+
+```javascript
+const centress = require('centress');
+const HttpError = centress.lib('error/http');
+endpointRouter.get('/foo_error', (req, res) => {
+  res.error(new HttpError(HttpError.BAD_REQUEST));
+});
+```
+
+You can also define your custom error class.
+
+```javascript
+const centress = require('centress');
+const errorFactory = centress.lib('error');
+
+// Key is custom error code and value is HTTP error code.
+const codes = {
+  'FOO': 400,
+  'BAR_BAZ': 404,
+  'YOO': 501
+};
+
+module.exports = errorFactory('Custom', codes);
+```
+#### Logger
+
+Centress uses log4js but you can also ignore it and use your preferred logging library.
+
+```javascript
+const centress = require('centress');
+const fileLogger = centress.lib('logger/file');
+endpointRouter.get('/foo', (req, res) => {
+  fileLogger.info('Hello World!');
+});
 ```
 
 ## License
