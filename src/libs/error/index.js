@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const BaseError = require('./_base');
+const BaseError = require('./base');
 
 let errorFactory = (name, codes) => {
 
