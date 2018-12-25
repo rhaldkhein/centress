@@ -18,16 +18,19 @@ centress.module(exports, {
       helmetConfig: {}
     });
 
+    const { config, app } = main;
+
     // Use helmet
-    main.app.use(helmet(main.config.helmetConfig));
+    if (config.helmet)
+      app.use(helmet(config.helmetConfig));
 
     // Parse application/json
-    if (main.config.json)
-      main.app.use(bodyparser.json());
+    if (config.json)
+      app.use(bodyparser.json());
 
     // Parse application/x-www-form-urlencoded
-    if (main.config.urlencoded)
-      main.app.use(
+    if (config.urlencoded)
+      app.use(
         bodyparser.urlencoded({
           extended: true
         })

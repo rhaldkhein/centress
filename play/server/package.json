@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "centress-hello": "0.0.0",
     "module-foo": "file:modules/foo",
     "module-test": "file:modules/test"
   }
