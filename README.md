@@ -1,6 +1,6 @@
 # Centress
 
-A modular monolithic Express framework for faster and maintainable web application.
+A tiny modular monolith Express framework for faster development and maintainable web application.
 
 #### Features
 
@@ -10,7 +10,7 @@ A modular monolithic Express framework for faster and maintainable web applicati
 - :white_check_mark: &nbsp; Dependency injection
 - :white_check_mark: &nbsp; Zero setup / configuration
 - :white_check_mark: &nbsp; Easily migrate to microservices
-- :white_check_mark: &nbsp; Scalable / extensible
+- :white_check_mark: &nbsp; Scalable and extensible
 
 #### Installation
 
@@ -66,7 +66,7 @@ centress.module(exports, {
   
   // Initialize your module with dependecy injection
   init: main => {
-    // Custom configuration provided user
+    // Custom configuration provided by user
     main.config.foo ? 'Bar' : 'Baz';
     // Express root APP
     main.app.use(bodyparser());
@@ -143,7 +143,7 @@ Use to create a Centress module. See above for how to create a Centress module.
 
 ## Configuration
 
-Configuration must be set before calling `centress.boot()` method.
+Configuration must be set before calling `centress.boot()` method. Environment variables are used, instead of default, if present.
 
 ```javascript
 // Writing config
@@ -159,19 +159,19 @@ const isProd = config.production ? 'YES' : 'NO';
 
 **Writable**
 
-| Path                | Type      | Default               | Description
-| :-                  | :-        | :-                    | :-
-| apiBaseUrl          | string    | `/api`                | Base URL for API routes in modules
-| logLevel            | string    | `all`                 | Log4js log level
-| server.host         | string    | `localhost`           | Host for Express server
-| server.port         | number    | `3000`                | Port for Express server
-| paths.root          | string    | boot caller dir       | Absolute path to root directory
-| paths.modules       | string    | `<root>/modules`      | Absolute Path to own local custom modules without using `package.json`
-| paths.moduleConfigs | string    | `<root>/config`       | Absolute Path to individual module config
-| express.settings    | object    | `{}`                  | Key/value pair for Express settings. http://expressjs.com/en/4x/api.html#app.set
-| log4js.appenders    | object    | `{console, file}`     | Log4js appenders config. Do not replace the whole object.
-| log4js.categories   | object    | `{default, file}`     | Log4js categories config. Do not replace the whole object.
-| log4js.pm2          | boolean   | `true`                | Log4js use PM2
+| Path                | Type    | Env                   | Default | Description
+| :-                  | :-      | :-                    | :- | :-
+| apiBaseUrl          | string  |                       | `/api` | Base URL for API routes in modules
+| logLevel            | string  | `APP_LOG_LEVEL`       | `all` | Log4js log level
+| server.host         | string  | `APP_HOST`            | `localhost` | Host for Express server
+| server.port         | number  | `APP_PORT` or `PORT`  | `3000` | Port for Express server
+| paths.root          | string  |                       | boot caller dir | Absolute path to root directory
+| paths.modules       | string  |                       | `<root>/modules` | Absolute Path to own local custom modules without using `package.json`
+| paths.moduleConfigs | string  |                       | `<root>/config` | Absolute Path to individual module config
+| express.settings    | object  |                       | `{}` | Key/value pair for [Express settings](http://expressjs.com/en/4x/api.html#app.set). 
+| log4js.appenders    | object  |                       | `{console, file}` | Log4js appenders config. Do not replace the whole object.
+| log4js.categories   | object  |                       | `{default, file}` | Log4js categories config. Do not replace the whole object.
+| log4js.pm2          | boolean |                       | `true` | Log4js use PM2
 
 **Read Only**
 
@@ -182,7 +182,7 @@ const isProd = config.production ? 'YES' : 'NO';
 
 #### Config Per Module
 
-Sample config per module are shown in the following code and to disable a module set `disabled: true`. All modules will always have config `index`, `prefix`, `disabled`.
+Sample config per module are shown in the following code and to disable a module set `disabled: true`. All modules will have config `index`, `prefix`, `disabled` and are reserved keys.
 
 ```javascript
 const centress = require('centress');
@@ -283,18 +283,18 @@ Handles GET `/health`, responding `200 OK` immediately.
 
 #### centress-mongoose
 
-Responsible for connecting to MongoDB database using Mongoose.
+Responsible for connecting to MongoDB database using Mongoose. Environment variables are used, instead of default, if present.
 
-| Config            | Type      | Default | Description
-| :-                | :-        | :- | :-
-| index             | number    | `-9997` | After `centress-health`
-| user              | string    | `''` | 
-| password          | string    | `''` | 
-| database          | string    | `''` | Database name
-| host              | string    | `localhost` | 
-| port              | number    | `27017` | 
-| validateOnUpdate  | boolean   | `true` | Run validation on update
-| options           | object    | `{ useNewUrlParser: true }` | 
+| Config            | Type      | Env           | Default | Description
+| :-                | :-        | :-            | :- | :-
+| index             | number    |               | `-9997` | After `centress-health`
+| user              | string    | `APP_DB_USER` | `''` | 
+| password          | string    | `APP_DB_PASS` | `''` | 
+| database          | string    | `APP_DB_NAME` | `''` | Database name
+| host              | string    | `APP_DB_HOST` | `localhost` |
+| port              | number    | `APP_DB_PORT` | `27017` |
+| validateOnUpdate  | boolean   |               | `true` | Run validation on update
+| options           | object    |               | `{ useNewUrlParser: true }` | 
 
 #### centress-response
 
@@ -318,26 +318,42 @@ Last in middleware/module chain. Flush payloads written by `res.data()`. Also re
 
 **res.success(payload[, code = 'OK'])**
 
-Immidiately send success json response with code and payload.
+Immidiately send success JSON response with code and payload. For API endpoints only.
 
 ```javascript
 endpointRouter.get('/foo', (req, res) => {
   res.success({ foo: 'bar' });
-  // { success: true, code: 'OK', payload: { foo:'bar' } }
 });
+
+// Response: 200
+{ 
+  success: true, 
+  code: 'OK', 
+  payload: { foo:'bar' } 
+}
 ```
 
 **res.error(err[, payload])**
 
-Immidiately send error json response.
+Immidiately send error JSON response with payload. For API endpoints only.
 
 ```javascript
 const centress = require('centress');
 const HttpError = centress.lib('error/http');
 endpointRouter.get('/foo_error', (req, res) => {
-  res.error(new HttpError(HttpError.BAD_REQUEST));
-  // { error: true, code: 'BAD_REQUEST', payload: { name: 'HttpError', ... } }
+  res.error(
+    new HttpError(HttpError.BAD_REQUEST, "Custom error message here"),
+    { foo: "bar" }
+  );
 });
+
+// Response: 400
+{ 
+  error: true, 
+  code: 'BAD_REQUEST', 
+  message: "Custom error message here", 
+  payload: { foo: "bar" }
+}
 ```
 
 **res.data(key, value)**
@@ -346,13 +362,15 @@ Write payloads to response for `centress-response` to flush at the end of chain.
 
 ```javascript
 // In `user` module
-endpointRouter.get('/foo', (req, res) => {
+endpointRouter.get('/foo', (req, res, next) => {
   res.data('user', { id: 'abc123', name: 'Foo'});
+  next();
 });
 
 // In `post` module
-endpointRouter.get('/foo', (req, res) => {
+endpointRouter.get('/foo', (req, res, next) => {
   res.data('posts', [{id: 'p1', title: 'Bar'}, {id: 'p2', title: 'Baz'}]);
+  next();
 });
 
 // `centress-response` will flush the following payload

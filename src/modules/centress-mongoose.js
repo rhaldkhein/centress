@@ -36,24 +36,25 @@ centress.module(exports, {
 
     _.defaults(main.config, defaults);
 
+    const { config } = main;
     const logger = centress.lib('logger/console');
 
-    if (_.isEmpty(main.config.database)) {
+    if (_.isEmpty(config.database)) {
       logger.info(`Database: skipped as not configured`)
       return;
     }
 
-    if (main.config.validateOnUpdate) mongoose.plugin(validateOnUpdate);
+    if (config.validateOnUpdate) mongoose.plugin(validateOnUpdate);
 
-    let host = main.config.host + (main.config.port ? ':' + main.config.port : ''),
-      credentials = main.config.user ? main.config.user + ':' + main.config.password + '@' : '',
+    let host = config.host + (config.port ? ':' + config.port : ''),
+      credentials = config.user ? config.user + ':' + config.password + '@' : '',
       url = 'mongodb://' + credentials;
 
     // Append host
     url += host;
 
     // Append database name
-    url += '/' + main.config.database;
+    url += '/' + config.database;
 
     // Assign default promise to mongoose
     mongoose.Promise = global.Promise;
@@ -61,7 +62,7 @@ centress.module(exports, {
     // Initiate connection
     logger.debug(`Database: connecting to ${host}`);
     return mongoose
-      .connect(url, main.config.options)
+      .connect(url, config.options)
       .then(() => logger.debug(`Database: connected`));
   },
 

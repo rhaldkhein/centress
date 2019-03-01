@@ -24,10 +24,10 @@ centress.module(exports, {
     const logger = centress.lib('logger/file');
 
     // Flush composed data
-    _master.api.use((req, res) => {
+    _master.api.use((req, res, done) => {
       if (res.locals.__data)
         return res.success(res.locals.__data);
-      throw new HttpError(HttpError.NOT_FOUND);
+      done(new HttpError(HttpError.NOT_FOUND));
     });
 
     // Catch and flush error
