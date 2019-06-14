@@ -1,107 +1,53 @@
-'use strict';
+import Setter from './setter'
+import Getter from './getter'
+import Config from './modules/config'
+import Server from './modules/server'
 
-const _ = require('lodash');
-const glob = require('glob');
-const callsite = require('callsite');
-const path = require('path');
+export class Centress {
 
-let userConfig = {};
+  setter = null
+  getter = null
+  _options = null
+  _services = {}
+  _instances = {}
+  _configService = null
 
-/**
- * Load extensions
- */
-
-function extensions(app) {
-  let pathExt = __dirname + '/exts';
-  glob.sync('*.js', { cwd: pathExt })
-    .forEach(filename => {
-      let fn = require(pathExt + '/' + filename);
-      if (typeof fn === 'function') fn(app);
-    });
-  return app;
-}
-
-/**
- * Set single user configuration
- */
-
-function set(path, value) {
-  _.set(userConfig, path, value);
-}
-exports.set = set;
-
-/**
- * Export internal libraries
- */
-exports.lib = require('./libs');
-
-/**
- * Export module hub
- */
-
-exports.module = require('./module');
-
-/**
- * Return a module
- */
-
-exports.get = exports.module.get;
-
-/**
- * Boot up the server
- */
-
-exports.boot = pathRoot => {
-
-  // Mandatory options
-  if (!_.isString(_.get(userConfig, 'paths.root'))) {
-    if (!_.isString(pathRoot))
-      pathRoot = path.dirname(callsite()[1].getFileName());
-    _.set(userConfig, 'paths.root', pathRoot);
+  constructor(config = {}, options = {}) {
+    this._options = options
+    this.setter = new Setter(this)
+    this.getter = new Getter(this)
+    this.setter.addService(Config)
+    this._configService = this.getter.getRequiredService('@config', config)
   }
 
-  // Merge default and user config
-  const baseConfig = _.defaultsDeep(
-    // User config
-    userConfig,
-    // Default config
-    require('./config')
-  );
-
-  // Apply master config for env vars
-  const config = Object.freeze(require('./config/master')(baseConfig));
-  exports.config = config;
-
-  // Globalize some objects for internal use
-  global.__CENTRESS__.config = config;
-
-  // Initialize built-in logger
-  const logger = require('./libs/logger/console');
-
-  // Boot all centress modules passing centress object
-  exports.module.boot(exports);
-
-  // Start database and express server
-  const server = require('./server');
-
-  // Error handler
-  function error(err) {
-    server.error(err);
-    logger.error(err);
+  start(registry) {
+    // Add server service
+    this.setter.addService(Server)
+    // Collect other services
+    if (typeof registry === 'function')
+      registry(this.setter)
+    // Start server
+    const server = this.getter.getRequiredService('@server', this)
+    return Promise.all(this._invoke('start'))
+      .then(results => server.start(results))
   }
 
-  // Boot sequence
-  Promise.resolve()
-    .then(server)
-    .then(extensions)
-    .catch(error);
+  _invoke(event) {
+    let results = []
+    for (const key in this._services) {
+      if (!this._services.hasOwnProperty(key)) continue
+      const service = this._services[key]
+      const method = service[event]
+      if (method) {
+        let res = method.call(
+          this.getter.getRequiredService(key),
+          this.getter,
+          this._configService.get(key)
+        )
+        results.push(res)
+      }
+    }
+    return results
+  }
 
-};
-
-/**
- * Set mock flag. For developing centress module.
- */
-
-exports.mock = () => {
-  set('__mock__', true);
-};
+}

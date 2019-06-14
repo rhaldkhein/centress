@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "master": "node play/server",
+    "babel": "babel src --out-dir lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,9 +25,12 @@
     "framework"
   ],
   "devDependencies": {
+    "@babel/preset-env": "^7.4.5",
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.8.0",
-    "nodemon": "^1.18.7"
+    "eslint": "^5.16.0",
+    "nodemon": "^1.19.1"
   },
   "dependencies": {
     "bluebird": "^3.5.3",

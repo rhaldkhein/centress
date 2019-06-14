@@ -12,22 +12,13 @@
     "impliedStrict": true
   },
   "rules": {
-    "indent": [
-      "error",
-      2
-    ],
     "quotes": [
       "error",
-      "single",
-      {
-        "allowTemplateLiterals": true
-      }
+      "single"
     ],
-    "allowTemplateLiterals": true,
     "semi": [
       "error",
-      "always"
+      "never"
     ]
-  },
-  "globals": {}
+  }
 }
