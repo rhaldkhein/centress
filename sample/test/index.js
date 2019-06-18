@@ -1,8 +1,11 @@
-const { Centress } = require('../../build')
+const { core } = require('../../build')
 const registry = require('./registry')
+const configure = require('./configure')
 
-const centress = new Centress()
+const app = core()
 
-centress
-  .build(registry)
+app.build(registry, configure)
   .start()
+  .then(provider => {
+    provider.getService('foo')
+  })

@@ -1,7 +1,5 @@
-const Server = require('./server')
+const Foo = require('./foo')
 
 module.exports = services => {
-
-  services.addSingleton(Server)
-
+  services.addSingleton(Foo)
 }

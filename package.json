@@ -6,6 +6,7 @@
   "scripts": {
     "build": "babel src --out-dir build",
     "dev": "babel src --watch --out-dir build",
+    "serve": "DEBUG=excore:* nodemon sample/test",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,12 +22,14 @@
   "keywords": [
     "express",
     "modular",
-    "monolith",
+    "dependency",
+    "injection",
     "framework"
   ],
   "dependencies": {
+    "debug": "^4.1.1",
     "express": "^4.17.1",
-    "jservice": "^0.1.2",
+    "jservice": "^0.1.6",
     "lodash.defaultsdeep": "^4.6.0",
     "lodash.get": "^4.4.2"
   },

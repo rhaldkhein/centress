@@ -1,14 +1,29 @@
-import Builder from 'jservice'
+import { Builder as BaseBuilder } from 'jservice'
 import Config from './services/config'
+import Server from './services/server'
+import Provider from './provider'
+import express from 'express'
 
-class Centress extends Builder {
+class Builder extends BaseBuilder {
 
-  build(registry) {
+  build(registry, configure) {
+    super.build(registry)
     this.collection.addSingleton(Config)
-    return super.build(registry)
+    this.collection.addSingleton(Server)
+    this.provider = new Provider(this.collection)
+    const serverService = this.provider.getService('$server')
+    configure(serverService.app)
+    return this
   }
 
 }
 
-export default Centress
-export { Centress }
+function core() {
+  return new Builder()
+}
+
+export default core
+export {
+  core,
+  express
+}
