@@ -4,7 +4,8 @@ const configure = require('./configure')
 
 const app = core()
 
-app.build(registry, configure)
+app
+  .build(registry, configure)
   .start()
   .then(provider => {
     provider.getService('foo')

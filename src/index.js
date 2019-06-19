@@ -1,12 +1,17 @@
+import path from 'path'
+import express from 'express'
+import callsite from 'callsite'
 import { Builder as BaseBuilder } from 'jservice'
 import Config from './services/config'
 import Server from './services/server'
 import Provider from './provider'
-import express from 'express'
 
 class Builder extends BaseBuilder {
 
+  path = null
+
   build(registry, configure) {
+    this.path = path.dirname(callsite()[1].getFileName())
     super.build(registry)
     this.collection.addSingleton(Config)
     this.collection.addSingleton(Server)

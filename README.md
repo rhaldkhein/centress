@@ -1,3 +1,3 @@
-# Centress
+# excore
 
-A modular monolith  micro-framework for Express
+A small dependency injection framework for Express. Inpsired by .Net Core.

@@ -1,6 +1,6 @@
 {
-  "name": "centress",
-  "version": "0.2.3",
+  "name": "excore",
+  "version": "0.0.0",
   "description": "A modular dependency injection micro-framework",
   "main": "build/index.js",
   "scripts": {
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rhaldkhein/centress.git"
+    "url": "git+https://github.com/rhaldkhein/excore.git"
   },
   "author": "RhaldKhein",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rhaldkhein/centress/issues"
+    "url": "https://github.com/rhaldkhein/excore/issues"
   },
-  "homepage": "https://github.com/rhaldkhein/centress#readme",
+  "homepage": "https://github.com/rhaldkhein/excore#readme",
   "keywords": [
     "express",
     "modular",
@@ -27,9 +27,10 @@
     "framework"
   ],
   "dependencies": {
+    "callsite": "^1.0.0",
     "debug": "^4.1.1",
     "express": "^4.17.1",
-    "jservice": "^0.1.6",
+    "jservice": "^0.1.7",
     "lodash.defaultsdeep": "^4.6.0",
     "lodash.get": "^4.4.2"
   },
@@ -45,6 +46,6 @@
   },
   "files": [
     "src",
-    "lib"
+    "build"
   ]
 }

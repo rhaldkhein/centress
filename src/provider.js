@@ -8,10 +8,12 @@ export default class ServiceProvider extends Provider {
     this._configService = configService
   }
 
-  createService(Service) {
+  createService(index) {
     return super.createService(
-      Service,
-      this._configService && this._configService.get(Service.service)
+      index,
+      this._configService && this._configService.get(
+        this._collection.services[index].service
+      )
     )
   }
 
