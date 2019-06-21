@@ -1,4 +1,7 @@
 import _get from 'lodash.get'
+import debug from 'debug'
+
+const debugConfig = debug('excore:config')
 
 export default class Config {
 
@@ -8,6 +11,7 @@ export default class Config {
 
   _set(config) {
     this._config = config
+    debugConfig('new config loaded')
   }
 
   get(path, defaultValue) {

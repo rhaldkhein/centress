@@ -7,6 +7,3 @@ const app = core()
 app
   .build(registry, configure)
   .start()
-  .then(provider => {
-    provider.getService('foo')
-  })
