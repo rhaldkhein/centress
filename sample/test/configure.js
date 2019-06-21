@@ -1,10 +1,14 @@
 
 const config = {
-  $server: {
-    // port: 3001
-  },
+  $server: {},
   foo: {
-    bar: 'Kevin'
+    name: 'Foo'
+  },
+  bar: {
+    name: 'Bar'
+  },
+  yoo: {
+    name: 'Yoo'
   }
 }
 

@@ -4,8 +4,8 @@
   "description": "A small dependency injection framework for Express. Inspired by .Net Core.",
   "main": "build/index.js",
   "scripts": {
-    "build": "babel src --out-dir build",
-    "dev": "babel src --watch --out-dir build",
+    "build": "rm -rf build && babel src --out-dir build",
+    "watch": "rm -rf build && babel src --watch --out-dir build",
     "serve": "DEBUG=excore:* nodemon sample/test",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

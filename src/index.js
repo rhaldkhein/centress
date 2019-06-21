@@ -9,16 +9,26 @@ import Provider from './provider'
 class Builder extends BaseBuilder {
 
   path = null
+  provider = null
+  configService = null
 
   build(registry, configure) {
     this.path = path.dirname(callsite()[1].getFileName())
     super.build(registry)
     this.collection.addSingleton(Config)
     this.collection.addSingleton(Server)
-    this.provider = new Provider(this.collection)
+    this.provider = this.createProvider(true)
+    this.configService = this.provider.getService('$config')
     const serverService = this.provider.getService('$server')
-    configure(serverService.app)
+    serverService.init()
+    if (typeof configure === 'function') {
+      configure(serverService.app)
+    }
     return this
+  }
+
+  createProvider(isSingleton) {
+    return new Provider(this.collection, this.configService, isSingleton)
   }
 
 }
