@@ -15,9 +15,13 @@ class Builder extends BaseBuilder {
   build(registry, configure) {
     this.path = path.dirname(callsite()[1].getFileName())
     super.build(registry)
+    // Adding built-in services
     this.collection.addSingleton(Config)
     this.collection.addSingleton(Server)
-    this.provider = this.createProvider(true)
+    // Create main singleton provider
+    this.provider = this.createProvider()
+    this.provider._isSingleton = true
+    // Initializing config and server
     this.configService = this.provider.getService('$config')
     const serverService = this.provider.getService('$server')
     serverService.init()
@@ -27,8 +31,8 @@ class Builder extends BaseBuilder {
     return this
   }
 
-  createProvider(isSingleton) {
-    return new Provider(this.collection, this.configService, isSingleton)
+  createProvider() {
+    return new Provider(this.collection, this.configService)
   }
 
 }

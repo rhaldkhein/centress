@@ -35,7 +35,7 @@ export default class Server {
     // First middleware. Attach scoped provider.
     this.app.use((req, res, next) => {
       debugRouter(req.url)
-      req.provider = this.core.createProvider(false)
+      req.provider = this.core.createProvider()
       next()
     })
   }
