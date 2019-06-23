@@ -4,35 +4,32 @@ import callsite from 'callsite'
 import { Builder as BaseBuilder } from 'jservice'
 import Config from './services/config'
 import Server from './services/server'
-import Provider from './provider'
 
 class Builder extends BaseBuilder {
 
   path = null
-  provider = null
   configService = null
 
-  build(registry, configure) {
+  build(configureServices, configure) {
     this.path = path.dirname(callsite()[1].getFileName())
-    super.build(registry)
     // Adding built-in services
-    this.collection.addSingleton(Config)
-    this.collection.addSingleton(Server)
-    // Create main singleton provider
-    this.provider = this.createProvider()
-    this.provider._isSingleton = true
-    // Initializing config and server
-    this.configService = this.provider.getService('$config')
-    const serverService = this.provider.getService('$server')
+    this._configureDefaultServices(this.collection)
+    // Run registry after all built-in services have been added
+    super.build(configureServices)
+    // Initialize server
+    const serverService = this.provider.getService('@server')
     serverService.init()
-    if (typeof configure === 'function') {
+    // Configure server
+    if (typeof configure === 'function')
       configure(serverService.app)
-    }
     return this
   }
 
-  createProvider() {
-    return new Provider(this.collection, this.configService)
+  _configureDefaultServices(services) {
+    services.addSingleton(Config)
+    services.addSingleton(Server, provider => {
+      return provider.getRequired('@config').get('server')
+    })
   }
 
 }

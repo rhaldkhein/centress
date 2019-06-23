@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rm -rf build && babel src --out-dir build",
     "watch": "rm -rf build && babel src --watch --out-dir build",
-    "serve": "DEBUG=excore:* nodemon sample/test",
+    "watch-sample": "rm -rf sample/basic/build && babel sample/basic/src --watch --out-dir sample/basic/build",
+    "sample": "DEBUG=excore:* nodemon sample/basic/build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -30,7 +31,7 @@
     "callsite": "^1.0.0",
     "debug": "^4.1.1",
     "express": "^4.17.1",
-    "jservice": "^0.1.7",
+    "jservice": "^0.1.10",
     "lodash.defaultsdeep": "^4.6.0",
     "lodash.get": "^4.4.2"
   },
@@ -38,6 +39,7 @@
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.5",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-decorators": "^7.4.4",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.4.5",
     "babel-eslint": "^10.0.1",

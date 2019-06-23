@@ -12,40 +12,42 @@ const debugServer = debug('excore:server')
 const debugRouter = debug('excore:router')
 
 export default class Server {
-  static service = '$server'
+  static service = '@server'
 
+  config = null
   defaults = {
     apiBaseUrl: '/api',
     port: 3000
   }
 
-  constructor(provider) {
+  constructor(provider, options) {
     this.core = provider.getService('$core')
     this.app = express()
     this.server = http.Server(this.app)
     this.apiRouter = express.Router()
     this.pageRouter = express.Router()
     this.app.$provider = provider
-    debugServer('server created')
+    this.config = _defaultsDeep({}, options, this.defaults)
+    debugServer('created')
   }
 
   // Invoked before configure
   init() {
-    debugServer('initializing server')
+    debugServer('preparing')
     // First middleware. Attach scoped provider.
     this.app.use((req, res, next) => {
       debugRouter(req.url)
-      req.provider = this.core.createProvider()
+      // Attache new scoped provider
+      req.provider = this.core.createScopedProvider()
       next()
     })
   }
 
   // Invoked after configure
-  listen(config) {
-    debugServer('starting http server')
-    config = _defaultsDeep({}, config, this.defaults)
+  listen() {
+    debugServer('starting http')
 
-    this.app.use(config.apiBaseUrl, this.apiRouter)
+    this.app.use(this.config.apiBaseUrl, this.apiRouter)
     this.app.use(this.pageRouter)
 
     // Last middleware
@@ -63,10 +65,10 @@ export default class Server {
 
     const listenServer = () => {
       return new Promise((resolve, reject) => {
-        const port = config.port
+        const port = this.config.port
         this.server.listen(port, err => {
           if (err) return reject(err)
-          debugServer('server started at port %d', port)
+          debugServer('started at port %d', port)
           resolve()
         })
       })
@@ -77,9 +79,8 @@ export default class Server {
   }
 
   static start(provider) {
-    const config = provider.getService('$config')
-    const server = provider.getService('$server')
-    return server.listen(config.get('$server'))
+    const server = provider.getService('@server')
+    return server.listen()
   }
 
 }

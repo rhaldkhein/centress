@@ -5,6 +5,10 @@ module.exports = function (api) {
       '@babel/preset-env'
     ],
     plugins: [
+      [
+        '@babel/plugin-proposal-decorators',
+        { decoratorsBeforeExport: true }
+      ],
       '@babel/plugin-syntax-dynamic-import',
       '@babel/plugin-proposal-class-properties'
     ]
