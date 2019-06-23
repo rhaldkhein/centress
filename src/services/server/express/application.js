@@ -26,7 +26,3 @@ app.useServiceRoutes = function () {
     }
   })
 }
-
-// app.useControllers = function (config) {
-//   const paths = config.paths
-// }

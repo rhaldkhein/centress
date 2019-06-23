@@ -22,33 +22,28 @@ export default class Server {
 
   constructor(provider, options) {
     this.core = provider.getService('$core')
-    this.app = express()
-    this.server = http.Server(this.app)
+    this.server = express()
+    this.http = http.Server(this.server)
     this.apiRouter = express.Router()
     this.pageRouter = express.Router()
-    this.app.$provider = provider
+    this.server.$provider = provider
     this.config = _defaultsDeep({}, options, this.defaults)
-    debugServer('created')
-  }
-
-  // Invoked before configure
-  init() {
-    debugServer('preparing')
     // First middleware. Attach scoped provider.
-    this.app.use((req, res, next) => {
+    this.server.use((req, res, next) => {
       debugRouter(req.url)
       // Attache new scoped provider
       req.provider = this.core.createScopedProvider()
       next()
     })
+    debugServer('created')
   }
 
   // Invoked after configure
   listen() {
     debugServer('starting http')
 
-    this.app.use(this.config.apiBaseUrl, this.apiRouter)
-    this.app.use(this.pageRouter)
+    this.server.use(this.config.apiBaseUrl, this.apiRouter)
+    this.server.use(this.pageRouter)
 
     // Last middleware
     this.apiRouter.use((req, res) => {
@@ -66,7 +61,7 @@ export default class Server {
     const listenServer = () => {
       return new Promise((resolve, reject) => {
         const port = this.config.port
-        this.server.listen(port, err => {
+        this.http.listen(port, err => {
           if (err) return reject(err)
           debugServer('started at port %d', port)
           resolve()
@@ -81,6 +76,12 @@ export default class Server {
   static start(provider) {
     const server = provider.getService('@server')
     return server.listen()
+    // process.nextTick(() => {
+    //   server.listen()
+    // })
+    // setTimeout(() => {
+    //   server.listen()
+    // }, 3000)
   }
 
 }

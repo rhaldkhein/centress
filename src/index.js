@@ -2,8 +2,11 @@ import path from 'path'
 import express from 'express'
 import callsite from 'callsite'
 import { Builder as BaseBuilder } from 'jservice'
+
+// Built-in services
 import Config from './services/config'
 import Server from './services/server'
+import Controller from './services/controller'
 
 class Builder extends BaseBuilder {
 
@@ -18,15 +21,15 @@ class Builder extends BaseBuilder {
     super.build(configureServices)
     // Initialize server
     const serverService = this.provider.getService('@server')
-    serverService.init()
     // Configure server
     if (typeof configure === 'function')
-      configure(serverService.app)
+      configure(serverService.server)
     return this
   }
 
   _configureDefaultServices(services) {
     services.addSingleton(Config)
+    services.addSingleton(Controller)
     services.addSingleton(Server, provider => {
       return provider.getRequired('@config').get('server')
     })
