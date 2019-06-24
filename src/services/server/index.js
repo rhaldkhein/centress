@@ -28,6 +28,7 @@ export default class Server {
     this.pageRouter = express.Router()
     this.server.$provider = provider
     this.config = _defaultsDeep({}, options, this.defaults)
+
     // First middleware. Attach scoped provider.
     this.server.use((req, res, next) => {
       debugRouter(req.url)
@@ -35,15 +36,17 @@ export default class Server {
       req.provider = this.core.createScopedProvider()
       next()
     })
+
+    // Attach primary routers
+    this.server.use(this.config.apiBaseUrl, this.apiRouter)
+    this.server.use(this.pageRouter)
     debugServer('created')
+
   }
 
   // Invoked after configure
   listen() {
     debugServer('starting http')
-
-    this.server.use(this.config.apiBaseUrl, this.apiRouter)
-    this.server.use(this.pageRouter)
 
     // Last middleware
     this.apiRouter.use((req, res) => {
@@ -76,12 +79,6 @@ export default class Server {
   static start(provider) {
     const server = provider.getService('@server')
     return server.listen()
-    // process.nextTick(() => {
-    //   server.listen()
-    // })
-    // setTimeout(() => {
-    //   server.listen()
-    // }, 3000)
   }
 
 }

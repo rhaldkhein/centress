@@ -1,32 +1,28 @@
 import debug from 'debug'
 
-const debugDecor = debug('excore:decorator')
+const debugCtrl = debug('excore:controller')
 
 let server, apiRouter, pageRouter
-
-debugDecor('context')
 
 export function init(_server, _apiRouter, _pageRouter) {
   server = _server
   apiRouter = _apiRouter
   pageRouter = _pageRouter
-  debugDecor('init')
-}
-
-export function get(value) {
-  debugDecor('get')
-  return function (target) {
-    debugDecor('attach get', value)
-    // descriptor.enumerable = value
-    // console.log('A', value, target)
-    // console.log(apiRouter);
-    apiRouter.get(value, target.descriptor.value)
-  }
 }
 
 export function api(value) {
   return function (target) {
-    // descriptor.enumerable = value
-    // console.log('B', value, target)
+    console.log(target.kind)
+    if (target.kind !== 'class') return
+    debugCtrl('api', value)
+  }
+}
+
+export function get(value) {
+  return function (target) {
+    if (target.kind !== 'method') return
+    console.log(target.kind)
+    apiRouter.get(value, target.descriptor.value)
+    debugCtrl('get', value)
   }
 }
