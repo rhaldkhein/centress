@@ -1,28 +1,81 @@
-import debug from 'debug'
+// console.log('C', target.elements[0].descriptor.value === m1.descriptor.value)
+// console.log('C', target.elements[1].descriptor.value === m1.descriptor.value)
 
-const debugCtrl = debug('excore:controller')
+export const _httpMethods = ['get', 'put', 'post', 'delete']
+export const _httpClasses = ['api', 'page']
 
-let server, apiRouter, pageRouter
+export function _flush() {
+  // return compiled methods
+  // clear for next controller
+  const _methods = methods
+  const _classes = classes
+  clean()
+  return {
+    methods: _methods,
+    classes: _classes
+  }
+}
+function clean() {
+  methods = {}
+  classes = {}
+}
+clean()
 
-export function init(_server, _apiRouter, _pageRouter) {
-  server = _server
-  apiRouter = _apiRouter
-  pageRouter = _pageRouter
+let classes
+let methods
+
+function push(holder, name, target, args) {
+  if (!holder[name]) holder[name] = []
+  target.args = args
+  holder[name].push(target)
 }
 
-export function api(value) {
+/**
+ * Register new annotations below
+ */
+
+// METHODS
+
+export function get(...args) {
   return function (target) {
-    console.log(target.kind)
-    if (target.kind !== 'class') return
-    debugCtrl('api', value)
+    if (target.kind !== 'method') return
+    push(methods, 'get', target, args)
   }
 }
 
-export function get(value) {
+export function put(...args) {
   return function (target) {
     if (target.kind !== 'method') return
-    console.log(target.kind)
-    apiRouter.get(value, target.descriptor.value)
-    debugCtrl('get', value)
+    push(methods, 'put', target, args)
+  }
+}
+
+export function post(...args) {
+  return function (target) {
+    if (target.kind !== 'method') return
+    push(methods, 'post', target, args)
+  }
+}
+
+export function del(...args) {
+  return function (target) {
+    if (target.kind !== 'method') return
+    push(methods, 'delete', target, args)
+  }
+}
+
+// CLASSES
+
+export function api(...args) {
+  return function (target) {
+    if (target.kind !== 'class') return
+    push(classes, 'api', target, args)
+  }
+}
+
+export function page(...args) {
+  return function (target) {
+    if (target.kind !== 'class') return
+    push(classes, 'page', target, args)
   }
 }

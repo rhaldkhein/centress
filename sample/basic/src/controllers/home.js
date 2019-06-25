@@ -1,14 +1,14 @@
 import { api, get } from '../../../../build/common'
 
-@api()
+@api('home')
 class Home {
 
-  @get('/hello')
+  @get('hello')
   hello(req, res) {
     res.jsonSuccess('hello world')
   }
 
-  @get('/world')
+  @get('world')
   world(req, res) {
 
   }
