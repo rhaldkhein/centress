@@ -1,11 +1,12 @@
-import { api, get } from '../../../../build/common'
+import { api, get, page, authorize } from '../../../../build/common'
 
-@api('home')
+@authorize()
+@page('home')
 class Home {
 
   @get('hello')
   hello(req, res) {
-    res.jsonSuccess('hello world')
+    res.send('hello world')
   }
 
   @get('world')

@@ -1,12 +1,13 @@
 import path from 'path'
-import express from 'express'
 import callsite from 'callsite'
+import express from 'express'
 import { Builder as BaseBuilder } from 'jservice'
 
 // Built-in services
 import Config from './services/config'
 import Server from './services/server'
 import Controller from './services/controller'
+import Auth from './services/auth'
 
 class Builder extends BaseBuilder {
 
@@ -29,6 +30,7 @@ class Builder extends BaseBuilder {
 
   _configureDefaultServices(services) {
     services.addSingleton(Config)
+    services.addSingleton(Auth)
     services.addSingleton(Controller)
     services.addSingleton(Server, provider => {
       return provider.getRequired('@config').get('server')
@@ -42,6 +44,7 @@ function core() {
 }
 
 export default core
+export * from 'express'
 export {
   core,
   express

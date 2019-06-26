@@ -12,6 +12,7 @@ export default class Controller {
 
   constructor(provider) {
     this.server = provider.getService('@server')
+    this.auth = provider.getService('@authentication')
     // serverService.server
     // serverService.apiRouter
     // serverService.pageRouter
@@ -36,19 +37,21 @@ export default class Controller {
     let apiBase
     let pageBase
 
-    // API
     if (c.classes.api) apiBase = '/' + c.classes.api[0].args[0]
     else if (c.classes.page) pageBase = '/' + c.classes.page[0].args[0]
-    else pageBase = '/'
 
     if (apiBase) {
       _httpMethods.forEach(
         method => this._addToRouter(
           this.server.apiRouter, c.methods, method, apiBase))
-    } else {
+    } else if (pageBase) {
       _httpMethods.forEach(
         method => this._addToRouter(
-          this.server.pageRouter, c.methods, method, apiBase))
+          this.server.pageRouter, c.methods, method, pageBase))
+    }
+
+    if (c.classes.authorize) {
+      // this.auth.authenticate(c.classes.authorize[0].args[0])
     }
 
   }

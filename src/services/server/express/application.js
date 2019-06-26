@@ -3,24 +3,25 @@ import debug from 'debug'
 
 const debugServer = debug('excore:server')
 
+if (app.useServiceRoutes)
+  throw new Error('Can\'t bind useServiceRoutes')
+
 app.useServiceRoutes = function () {
   debugServer('using service routes')
   const serverService = this.$provider.getService('@server')
   const collection = this.$provider.getService('$core').collection
   const services = collection.services
-  const provider = this.$provider
   services.forEach(Service => {
     if (Service.type === collection.types.SINGLETON) {
-      let instance = provider.getService(Service.service)
-      let baseUrl = instance.baseUrl || '/' + Service.service
-      if (instance.api) {
+      let baseUrl = Service.baseUrl || '/' + Service.service
+      if (Service.api) {
         let apiRouter = express.Router()
-        instance.api(apiRouter)
+        Service.api(apiRouter)
         serverService.apiRouter.use(baseUrl, apiRouter)
       }
-      if (instance.page) {
+      if (Service.page) {
         let pageRouter = express.Router()
-        instance.page(pageRouter)
+        Service.page(pageRouter)
         serverService.pageRouter.use(baseUrl, pageRouter)
       }
     }

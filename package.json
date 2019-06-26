@@ -32,9 +32,10 @@
     "debug": "^4.1.1",
     "express": "^4.17.1",
     "glob": "^7.1.4",
-    "jservice": "^0.1.10",
+    "jservice": "^0.1.12",
     "lodash.defaultsdeep": "^4.6.0",
-    "lodash.get": "^4.4.2"
+    "lodash.get": "^4.4.2",
+    "passport": "^0.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
@@ -45,7 +46,8 @@
     "@babel/preset-env": "^7.4.5",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "passport-local": "^1.0.0"
   },
   "files": [
     "src",

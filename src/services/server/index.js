@@ -5,6 +5,7 @@ import http from 'http'
 import HttpError from './error'
 
 import './express/application'
+import './express/request'
 import './express/response'
 
 const prod = process.env.NODE_ENV === 'production'
@@ -34,6 +35,7 @@ export default class Server {
       debugRouter(req.url)
       // Attache new scoped provider
       req.provider = this.core.createScopedProvider()
+      res.set('X-Powered-By', 'Express; Excore')
       next()
     })
 

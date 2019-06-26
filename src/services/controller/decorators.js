@@ -79,3 +79,10 @@ export function page(...args) {
     push(classes, 'page', target, args)
   }
 }
+
+export function authorize(...args) {
+  return function (target) {
+    if (target.kind !== 'class') return
+    push(classes, 'authorize', target, args)
+  }
+}
