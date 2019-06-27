@@ -1,6 +1,9 @@
 import { application as app } from 'express'
 import path from 'path'
 
+if (app.useControllers)
+  throw new Error('Can\'t bind useControllers to express')
+
 app.useControllers = function (config) {
   config = config || { paths: ['./controllers'] }
   if (typeof config === 'string') config = { paths: [config] }

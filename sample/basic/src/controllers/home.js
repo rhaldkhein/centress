@@ -1,17 +1,18 @@
-import { api, get, page, authorize } from '../../../../build/common'
+import { get, post, page, authorize } from '../../../../build/common'
 
 @authorize()
 @page('home')
 class Home {
 
-  @get('hello')
-  hello(req, res) {
-    res.send('hello world')
+  @authorize.disable()
+  @get('open')
+  open(req, res) {
+    res.send('open route for ' + req.user.name)
   }
 
-  @get('world')
-  world(req, res) {
-
+  @get('closed')
+  closed(req, res) {
+    res.send('closed route for ' + req.user.name)
   }
 
 }

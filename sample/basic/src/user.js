@@ -1,6 +1,6 @@
 import { page, get, api, post } from '../../../../build/common'
 
-@page('userx') // 5
+@page('user') // 5
 @api('user') // 4
 class User {
 

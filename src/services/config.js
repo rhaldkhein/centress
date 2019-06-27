@@ -35,7 +35,7 @@ export default class Config {
       // Nothing
     }
     this._config = _defaultsDeep(prod ? {} : devConfig, config)
-    debugConfig('loaded', '...' + file.substr(file.length - 24))
+    debugConfig('created ...%s', file.substr(file.length - 24))
   }
 
   get(path, defaultValue) {

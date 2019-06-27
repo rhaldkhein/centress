@@ -4,7 +4,7 @@ import express from 'express'
 import http from 'http'
 import HttpError from './error'
 
-import './express/application'
+import './express/express'
 import './express/request'
 import './express/response'
 
@@ -38,17 +38,16 @@ export default class Server {
       res.set('X-Powered-By', 'Express; Excore')
       next()
     })
-
-    // Attach primary routers
-    this.server.use(this.config.apiBaseUrl, this.apiRouter)
-    this.server.use(this.pageRouter)
     debugServer('created')
-
   }
 
   // Invoked after configure
   listen() {
     debugServer('starting http')
+
+    // Attach primary routers
+    this.server.use(this.config.apiBaseUrl, this.apiRouter)
+    this.server.use(this.pageRouter)
 
     // Last middleware
     this.apiRouter.use((req, res) => {

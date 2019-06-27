@@ -15,16 +15,19 @@ export function configureServices(services) {
   services.addScoped(Baz)
 
   services.configure('@authentication', () => {
-    return {
-      default: 'local',
-      strategy: new LocalStrategy(
+    return auth => {
+      auth.default = 'local'
+      auth.use(new LocalStrategy(
         function (username, password, done) {
-          return done(null, {
+          done(null, {
             id: 1,
             name: 'Foo'
           })
         }
-      )
+      ))
+      const serializer = (user, done) => done(null, user)
+      auth.serializeUser(serializer)
+      auth.deserializeUser(serializer)
     }
   })
 
@@ -32,6 +35,7 @@ export function configureServices(services) {
 
 export function configure(app) {
 
+  app.useBodyParser()
   app.useAuthentication()
 
   /* 

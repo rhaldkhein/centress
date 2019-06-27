@@ -1,10 +1,23 @@
 import express, { application as app } from 'express'
 import debug from 'debug'
+import bodyparser from 'body-parser'
 
 const debugServer = debug('excore:server')
 
+if (app.useBodyParser)
+  throw new Error('Can\'t bind useBodyParser to express')
+
+app.useBodyParser = function () {
+  this.use(bodyparser.json())
+  this.use(
+    bodyparser.urlencoded({
+      extended: true
+    })
+  )
+}
+
 if (app.useServiceRoutes)
-  throw new Error('Can\'t bind useServiceRoutes')
+  throw new Error('Can\'t bind useServiceRoutes to express')
 
 app.useServiceRoutes = function () {
   debugServer('using service routes')

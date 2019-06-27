@@ -7,7 +7,7 @@ import { Builder as BaseBuilder } from 'jservice'
 import Config from './services/config'
 import Server from './services/server'
 import Controller from './services/controller'
-import Auth from './services/auth'
+import Authentication from './services/authentication'
 
 class Builder extends BaseBuilder {
 
@@ -30,7 +30,7 @@ class Builder extends BaseBuilder {
 
   _configureDefaultServices(services) {
     services.addSingleton(Config)
-    services.addSingleton(Auth)
+    services.addSingleton(Authentication)
     services.addSingleton(Controller)
     services.addSingleton(Server, provider => {
       return provider.getRequired('@config').get('server')

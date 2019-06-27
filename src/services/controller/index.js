@@ -26,7 +26,7 @@ export default class Controller {
         .forEach(file => {
           require(file)
           this._register(_flush())
-          debugCtrl('load ...%s', file.substr(file.length - 24))
+          debugCtrl('file ...%s', file.substr(file.length - 24))
         })
     })
     debugCtrl('done')
@@ -37,31 +37,55 @@ export default class Controller {
     let apiBase
     let pageBase
 
-    if (c.classes.api) apiBase = '/' + c.classes.api[0].args[0]
-    else if (c.classes.page) pageBase = '/' + c.classes.page[0].args[0]
+    // console.log(c.classes)
+    console.log(c.methods)
 
-    if (apiBase) {
-      _httpMethods.forEach(
-        method => this._addToRouter(
-          this.server.apiRouter, c.methods, method, apiBase))
-    } else if (pageBase) {
-      _httpMethods.forEach(
-        method => this._addToRouter(
-          this.server.pageRouter, c.methods, method, pageBase))
-    }
+    // if (c.classes.api) apiBase = '/' + c.classes.api[0].args[0]
+    // else if (c.classes.page) pageBase = '/' + c.classes.page[0].args[0]
 
-    if (c.classes.authorize) {
-      // this.auth.authenticate(c.classes.authorize[0].args[0])
-    }
+    // let middlewares = []
+    // if (c.classes.authorize) {
+    //   middlewares.push(
+    //     this.auth.authenticate(
+    //       c.classes.authorize[0].args[0],
+    //       c.classes.authorize[0].args[1]
+    //     )
+    //   )
+    // }
+
+    // if (apiBase) {
+    //   _httpMethods.forEach(
+    //     method => this._addToRouter(
+    //       this.server.apiRouter,
+    //       c.methods,
+    //       method,
+    //       apiBase,
+    //       middlewares.filter(v => v)
+    //     ))
+    // } else if (pageBase) {
+    //   _httpMethods.forEach(
+    //     method => this._addToRouter(
+    //       this.server.pageRouter,
+    //       c.methods,
+    //       method,
+    //       pageBase,
+    //       middlewares.filter(v => v)
+    //     ))
+    // }
 
   }
 
-  _addToRouter(router, methods, httpMethod, baseUrl) {
+  _addToRouter(router, methods, httpMethod, baseUrl, middlewares) {
     (methods[httpMethod] || []).forEach(target => {
-      router[httpMethod](
-        baseUrl + '/' + target.args[0],
-        target.descriptor.value
-      )
+      // if (methods.authorize_disable) {
+      //   console.log(
+      //     methods.authorize_disable[0].descriptor.value
+      //   );
+      // }
+      const args = [...middlewares]
+      args.unshift(baseUrl + '/' + target.args[0])
+      args.push(target.descriptor.value)
+      router[httpMethod].apply(router, args)
       debugCtrl('rout ...%s', baseUrl + '/' + target.args[0])
     })
   }

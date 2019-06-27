@@ -16,73 +16,88 @@ export function _flush() {
   }
 }
 function clean() {
-  methods = {}
-  classes = {}
+  methods = []
+  classes = []
 }
 clean()
 
 let classes
 let methods
 
-function push(holder, name, target, args) {
-  if (!holder[name]) holder[name] = []
+function push(holder, target, args) {
   target.args = args
-  holder[name].push(target)
+  holder.push(target)
 }
 
 /**
  * Register new annotations below
  */
 
-// METHODS
-
-export function get(...args) {
-  return function (target) {
-    if (target.kind !== 'method') return
-    push(methods, 'get', target, args)
-  }
-}
-
-export function put(...args) {
-  return function (target) {
-    if (target.kind !== 'method') return
-    push(methods, 'put', target, args)
-  }
-}
-
-export function post(...args) {
-  return function (target) {
-    if (target.kind !== 'method') return
-    push(methods, 'post', target, args)
-  }
-}
-
-export function del(...args) {
-  return function (target) {
-    if (target.kind !== 'method') return
-    push(methods, 'delete', target, args)
-  }
-}
-
 // CLASSES
 
 export function api(...args) {
   return function (target) {
     if (target.kind !== 'class') return
-    push(classes, 'api', target, args)
+    target.api = true
+    push(classes, target, args)
   }
 }
 
 export function page(...args) {
   return function (target) {
     if (target.kind !== 'class') return
-    push(classes, 'page', target, args)
+    target.page = true
+    push(classes, target, args)
   }
 }
 
 export function authorize(...args) {
   return function (target) {
     if (target.kind !== 'class') return
-    push(classes, 'authorize', target, args)
+    target.authorize = true
+    push(classes, target, args)
+  }
+}
+
+
+// METHODS
+
+authorize.disable = function (...args) {
+  return function (target) {
+    if (target.kind !== 'method') return
+    target.disableAuthorize = true
+    push(methods, target, args)
+  }
+}
+
+export function get(...args) {
+  return function (target) {
+    if (target.kind !== 'method') return
+    target.method = 'get'
+    push(methods, target, args)
+  }
+}
+
+export function put(...args) {
+  return function (target) {
+    if (target.kind !== 'method') return
+    target.method = 'put'
+    push(methods, target, args)
+  }
+}
+
+export function post(...args) {
+  return function (target) {
+    if (target.kind !== 'method') return
+    target.method = 'post'
+    push(methods, target, args)
+  }
+}
+
+export function del(...args) {
+  return function (target) {
+    if (target.kind !== 'method') return
+    target.method = 'delete'
+    push(methods, target, args)
   }
 }
