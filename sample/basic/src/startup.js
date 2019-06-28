@@ -14,30 +14,28 @@ export function configureServices(services) {
   services.addTransient(Yoo)
   services.addScoped(Baz)
 
-  services.configure('@authentication', () => {
-    return auth => {
-      auth.addAuthorize('local', 'local', { session: false })
-      auth.addAuthorize('localx', 'localx')
-      auth.use(new LocalStrategy(
-        function (username, password, done) {
-          done(null, {
-            id: 1,
-            name: 'Foo'
-          })
-        }
-      ))
-      const serializer = (user, done) => done(null, user)
-      auth.serializeUser(serializer)
-      auth.deserializeUser(serializer)
-    }
-  })
+  // services.configure('@authentication', () => {
+  //   return auth => {
+  //     auth.addAuthorize('local', 'local', { session: false })
+  //     auth.use(new LocalStrategy(
+  //       function (username, password, done) {
+  //         done(null, {
+  //           id: 1,
+  //           name: 'Foo'
+  //         })
+  //       }
+  //     ))
+  //     const serializer = (user, done) => done(null, user)
+  //     auth.serializeUser(serializer)
+  //     auth.deserializeUser(serializer)
+  //   }
+  // })
 
 }
 
 export function configure(app) {
 
-  app.useBodyParser()
-  app.useAuthentication()
+  // app.useAuthentication()
   app.useControllers()
 
 }
