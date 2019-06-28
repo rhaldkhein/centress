@@ -17,6 +17,7 @@ export function configureServices(services) {
   services.configure('@authentication', () => {
     return auth => {
       auth.addAuthorize('local', 'local', { session: false })
+      auth.addAuthorize('localx', 'localx')
       auth.use(new LocalStrategy(
         function (username, password, done) {
           done(null, {

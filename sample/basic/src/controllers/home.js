@@ -1,11 +1,11 @@
 import { get, post, page, api, authorize } from '../../../../build/common'
 
-@authorize()
+@authorize('local')
 @api('home')
 @page('home')
 class Home {
 
-  @authorize.off()
+  @authorize(false)
   @get('open')
   open(req, res) {
     res.send('open route')

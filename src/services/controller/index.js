@@ -34,18 +34,26 @@ export default class Controller {
       if (methods.hasOwnProperty(key)) {
         const des = methods[key]
         if (des.api)
-          this._addToRouter(this.server.apiRouter, des, '/' + des.api[0])
+          this._addMethod(this.server.apiRouter, des, '/' + des.api[0])
         if (des.page)
-          this._addToRouter(this.server.pageRouter, des, '/' + des.page[0])
+          this._addMethod(this.server.pageRouter, des, '/' + des.page[0])
       }
     }
   }
 
-  _addToRouter(router, des, baseUrl) {
+  _addMethod(router, des, baseUrl) {
     let mw = [] // middlewares
     // Add authentication
-    if (des.auth && !des.authOff)
-      mw.push(this.auth.authorize(des.auth[0], des.auth[1], des.auth[2]))
+    if (des.auth) {
+      if (des.authMethod) {
+        if (des.authMethod[0] !== false)
+          mw.push(this.auth.authorize(
+            des.authMethod[0], des.authMethod[1], des.authMethod[2]))
+      } else {
+        mw.push(this.auth.authorize(des.auth[0],
+          des.auth[1], des.auth[2]))
+      }
+    }
     // Add middlewares
     if (des.httpGet)
       router.get(baseUrl + '/' + des.httpGet[0], mw, des.value)

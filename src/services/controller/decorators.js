@@ -29,7 +29,10 @@ function decor(target, key, args) {
   } else {
     // For methods
     let des = methods[target.key]
-    if (!des) methods[target.key] = des = { value: target.descriptor.value }
+    if (!des) methods[target.key] = des = {
+      value: target.descriptor.value,
+      name: target.key
+    }
     return des
   }
 }
@@ -56,20 +59,15 @@ export function page(...args) {
 
 export function authorize(...args) {
   return function (target) {
-    if (target.kind !== 'class') return
-    decor(null, 'auth', args)
+    if (target.kind === 'class')
+      decor(null, 'auth', args)
+    else if (target.kind === 'method')
+      decor(target).authMethod = args
   }
 }
 
 
 // METHODS
-
-authorize.off = function (...args) {
-  return function (target) {
-    if (target.kind !== 'method') return
-    decor(target).authOff = args
-  }
-}
 
 export function get(...args) {
   return function (target) {
