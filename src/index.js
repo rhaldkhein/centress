@@ -4,6 +4,7 @@ import express from 'express'
 import { Builder as BaseBuilder } from 'jservice'
 
 // Built-in services
+import Util from './services/util'
 import Config from './services/config'
 import Server from './services/server'
 import Controller from './services/controller'
@@ -29,6 +30,7 @@ class Builder extends BaseBuilder {
   }
 
   _configureDefaultServices(services) {
+    services.addSingleton(Util)
     services.addSingleton(Config)
     services.addSingleton(Authentication)
     services.addSingleton(Controller)

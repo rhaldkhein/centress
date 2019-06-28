@@ -16,7 +16,7 @@ export function configureServices(services) {
 
   services.configure('@authentication', () => {
     return auth => {
-      auth.default = 'local'
+      auth.addAuthorize('local', 'local', { session: false })
       auth.use(new LocalStrategy(
         function (username, password, done) {
           done(null, {
@@ -37,15 +37,6 @@ export function configure(app) {
 
   app.useBodyParser()
   app.useAuthentication()
-
-  /* 
-  Inside will be: {
-    app.use(passport.initialize());
-    app.use(passport.session());
-  }
-  */
-
-  // app.useServiceRoutes()
   app.useControllers()
 
 }

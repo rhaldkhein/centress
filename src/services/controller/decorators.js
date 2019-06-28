@@ -1,32 +1,37 @@
-// console.log('C', target.elements[0].descriptor.value === m1.descriptor.value)
-// console.log('C', target.elements[1].descriptor.value === m1.descriptor.value)
-
-export const _httpMethods = ['get', 'put', 'post', 'delete']
-export const _httpClasses = ['api', 'page']
-
 export function _flush() {
   // return compiled methods
-  // clear for next controller
+  // clean for next controller
   const _methods = methods
-  const _classes = classes
+  const _klass = klass
   clean()
   return {
     methods: _methods,
-    classes: _classes
+    klass: _klass
   }
 }
 function clean() {
-  methods = []
-  classes = []
+  methods = {}
+  klass = {}
 }
 clean()
 
-let classes
+let klass
 let methods
 
-function push(holder, target, args) {
-  target.args = args
-  holder.push(target)
+function decor(target, key, args) {
+  if (!target) {
+    // For class, loop through methods and add key and args
+    for (const prop in methods) {
+      if (methods.hasOwnProperty(prop))
+        methods[prop][key] = args
+    }
+    return
+  } else {
+    // For methods
+    let des = methods[target.key]
+    if (!des) methods[target.key] = des = { value: target.descriptor.value }
+    return des
+  }
 }
 
 /**
@@ -38,66 +43,65 @@ function push(holder, target, args) {
 export function api(...args) {
   return function (target) {
     if (target.kind !== 'class') return
-    target.api = true
-    push(classes, target, args)
+    decor(null, 'api', args)
   }
 }
 
 export function page(...args) {
   return function (target) {
     if (target.kind !== 'class') return
-    target.page = true
-    push(classes, target, args)
+    decor(null, 'page', args)
   }
 }
 
 export function authorize(...args) {
   return function (target) {
     if (target.kind !== 'class') return
-    target.authorize = true
-    push(classes, target, args)
+    decor(null, 'auth', args)
   }
 }
 
 
 // METHODS
 
-authorize.disable = function (...args) {
+authorize.off = function (...args) {
   return function (target) {
     if (target.kind !== 'method') return
-    target.disableAuthorize = true
-    push(methods, target, args)
+    decor(target).authOff = args
   }
 }
 
 export function get(...args) {
   return function (target) {
     if (target.kind !== 'method') return
-    target.method = 'get'
-    push(methods, target, args)
+    decor(target).httpGet = args
   }
 }
 
 export function put(...args) {
   return function (target) {
     if (target.kind !== 'method') return
-    target.method = 'put'
-    push(methods, target, args)
+    decor(target).httpPut = args
   }
 }
 
 export function post(...args) {
   return function (target) {
     if (target.kind !== 'method') return
-    target.method = 'post'
-    push(methods, target, args)
+    decor(target).httpPost = args
   }
 }
 
 export function del(...args) {
   return function (target) {
     if (target.kind !== 'method') return
-    target.method = 'delete'
-    push(methods, target, args)
+    decor(target).httpDelete = args
+  }
+}
+
+export function patch(...args) {
+  return function (target) {
+    if (target.kind !== 'method') return
+    decor(target).httpPatch = args
   }
 }
