@@ -21,8 +21,8 @@ export default class HttpError extends Error {
     if (opt.code) this.code = opt.code
     if (opt.payload) this.payload = opt.payload
     if (opt.meta) this.meta = opt.meta
-    this.res.status(this.status)
-      .json({
+    if (this.res) {
+      this.res.status(this.status).json({
         error: {
           code: this.code,
           message: prod ? null : this.message
@@ -30,6 +30,7 @@ export default class HttpError extends Error {
         meta: this.meta,
         payload: this.payload
       })
+    }
   }
 
   // 400

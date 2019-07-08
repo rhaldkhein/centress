@@ -8,6 +8,8 @@ class Home {
   @get('open')
   @post('open')
   open(req, res) {
+    const yoo = req.service('yoo')
+    console.log(yoo)
     res.jsonSuccess('open route')
   }
 

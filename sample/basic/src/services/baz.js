@@ -1,5 +1,4 @@
 
-
 export default class Baz {
   static service = 'baz'
 

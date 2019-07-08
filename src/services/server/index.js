@@ -5,7 +5,6 @@ import http from 'http'
 import HttpError from './error'
 
 import './express/express'
-import './express/request'
 import './express/response'
 
 const prod = process.env.NODE_ENV === 'production'
@@ -22,7 +21,7 @@ export default class Server {
   }
 
   constructor(provider, options) {
-    this.core = provider.getService('$core')
+    this.core = provider.service('__core__')
     this.server = express()
     this.http = http.Server(this.server)
     this.apiRouter = express.Router()
@@ -45,6 +44,9 @@ export default class Server {
   listen() {
     debugServer('starting http')
 
+    // Infuse di container to request
+    this.server.use(this.core.init())
+
     // Attach primary routers
     this.server.use(this.config.apiBaseUrl, this.apiRouter)
     this.server.use(this.pageRouter)
@@ -54,10 +56,13 @@ export default class Server {
       res.jsonError().notFound()
     })
 
-    // Catch and flush error
+    // Catch and flush error for API
     // eslint-disable-next-line no-unused-vars
     this.apiRouter.use((err, req, res, next) => {
-      if (err instanceof HttpError) return err.send()
+      if (err instanceof HttpError) {
+        if (!err.res) err.res = res
+        return err.send()
+      }
       res.jsonError().internal(prod ? null : err.message)
       debugServer('error', err)
     })
@@ -78,7 +83,7 @@ export default class Server {
   }
 
   static start(provider) {
-    const server = provider.getService('@server')
+    const server = provider.service('@server')
     return server.listen()
   }
 

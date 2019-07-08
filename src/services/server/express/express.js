@@ -8,8 +8,8 @@ if (app.useServiceRoutes)
 
 app.useServiceRoutes = function () {
   debugServer('using service routes')
-  const serverService = this.$provider.getService('@server')
-  const collection = this.$provider.getService('$core').collection
+  const serverService = this.$provider.service('@server')
+  const collection = this.$provider.service('__core__').collection
   const services = collection.services
   services.forEach(Service => {
     if (Service.type === collection.types.SINGLETON) {

@@ -32,7 +32,7 @@
     "debug": "^4.1.1",
     "express": "^4.17.1",
     "glob": "^7.1.4",
-    "jservice": "^0.1.12",
+    "jservice": "^0.1.18",
     "lodash.defaultsdeep": "^4.6.0",
     "lodash.get": "^4.4.2",
     "passport": "^0.4.0"

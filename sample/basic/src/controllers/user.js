@@ -1,7 +1,8 @@
-import { page, get, api, post } from '../../../../build/common'
+import { page, get, api, post, authorize } from '../../../../build/common'
 
+@authorize()
 @page('user') // 5
-@api('user') // 4
+// @api('user') // 4
 class User {
 
   @post('world') // 1

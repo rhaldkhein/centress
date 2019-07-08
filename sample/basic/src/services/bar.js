@@ -5,15 +5,15 @@ export default class Bar {
   api(apiRouter) {
 
     apiRouter.get('/test', (req, res, next) => {
-      req.provider.getService('foo') // singleton
-      req.provider.getService('yoo') // transient
+      req.service('foo') // singleton
+      req.service('yoo') // transient
       // res.jsonError().badRequest()
       next()
     })
 
     apiRouter.get('/test', (req, res) => {
-      req.provider.getService('foo') // singleton
-      req.provider.getService('yoo') // transient
+      req.service('foo') // singleton
+      req.service('yoo') // transient
       res.jsonError().badRequest()
     })
 

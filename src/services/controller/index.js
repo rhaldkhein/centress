@@ -8,11 +8,9 @@ const debugCtrl = debug('excore:controller')
 export default class Controller {
   static service = '@controller'
 
-  _methods = ['get', 'put']
-
   constructor(provider) {
-    this.server = provider.getService('@server')
-    this.auth = provider.getService('@authentication')
+    this.server = provider.service('@server')
+    this.auth = provider.service('@authentication')
     debugCtrl('created')
   }
 
