@@ -1,7 +1,7 @@
 import { application as app } from 'express'
 
 if (app.useAuthentication)
-  throw new Error('Can\'t bind useAuthentication to express')
+  throw new Error('Not compatible with express')
 
 app.useAuthentication = function (config) {
   const auth = this.$provider.service('@authentication')

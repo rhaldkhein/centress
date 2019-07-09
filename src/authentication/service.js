@@ -4,6 +4,10 @@ import './express'
 
 const debugAuth = debug('excore:authentication')
 
+const isEmpty = obj => [Object, Array]
+  .includes((obj || {}).constructor) &&
+  !Object.entries((obj || {})).length
+
 export default class Authentication {
   static service = '@authentication'
 
@@ -11,11 +15,8 @@ export default class Authentication {
   defaultAuthorize = null
   isInit = false
 
-  _util = null
-
   constructor(provider, configure) {
     if (configure) configure(this)
-    this._util = provider.get('@util')
     debugAuth('created')
   }
 
@@ -35,7 +36,7 @@ export default class Authentication {
     }
     let auth = null
     // Check from authorize list
-    if (!this._util.isEmpty(this.authorizeList))
+    if (!isEmpty(this.authorizeList))
       auth = this.authorizeList[strategy || this.defaultAuthorize]
     // Auth from list or fallback to passport
     if (auth)

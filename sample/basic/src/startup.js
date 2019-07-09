@@ -4,7 +4,7 @@ import Yoo from './services/yoo'
 import Baz from './services/baz'
 
 import { Strategy as LocalStrategy } from 'passport-local'
-import { HttpError } from '../../../build/common'
+import { HttpError, Authentication, Server } from '../../../build'
 
 export function configureServices(services) {
 
@@ -14,7 +14,7 @@ export function configureServices(services) {
   services.transient(Yoo)
   services.scoped(Baz)
 
-  services.configure('@authentication', () => {
+  services.configure(Authentication, () => {
     return auth => {
       auth.addAuthorize('local', 'local', { session: false })
       auth.use(new LocalStrategy(
@@ -36,9 +36,22 @@ export function configureServices(services) {
 
 }
 
-export function configure(app) {
+export function configureApplication(app) {
 
   app.useAuthentication()
   app.useControllers()
+
+  app.usePageRouter(router => {
+
+    router.use((req, res) => {
+      // throw new Error('XXX')
+      res.send('404')
+    })
+
+    router.use((err, req, res, next) => {
+      res.send('500')
+    })
+
+  })
 
 }

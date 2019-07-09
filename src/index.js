@@ -4,18 +4,18 @@ import express from 'express'
 import BaseBuilder from 'jservice'
 
 // Built-in services
-import Util from './services/util'
-import Config from './services/config'
-import Server from './services/server'
-import Controller from './services/controller'
-import Authentication from './services/authentication'
+import Config from './config/service'
+import Server from './server/service'
+import HttpError from './server/error'
+import Controller from './controller/service'
+import Authentication from './authentication/service'
 
 class Builder extends BaseBuilder {
 
   path = null
   configService = null
 
-  build(configureServices, configure) {
+  configure(configureServices, configure) {
     this.path = path.dirname(callsite()[1].getFileName())
     // Adding built-in services
     this._configureDefaultServices(this.collection)
@@ -30,7 +30,6 @@ class Builder extends BaseBuilder {
   }
 
   _configureDefaultServices(services) {
-    services.singleton(Util)
     services.singleton(Config)
     services.singleton(Authentication)
     services.singleton(Controller)
@@ -48,6 +47,14 @@ function core() {
 export default core
 export * from 'express'
 export {
+  // Functions
   core,
-  express
+  express,
+  // Classes
+  HttpError,
+  // Services
+  Server,
+  Controller,
+  Authentication,
+  Config
 }

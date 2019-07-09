@@ -3,8 +3,12 @@ import debug from 'debug'
 
 const debugServer = debug('excore:server')
 
-if (app.useServiceRoutes)
-  throw new Error('Can\'t bind useServiceRoutes to express')
+if (
+  app.useServiceRoutes
+  || app.usePageRouter
+  || app.useApiRouter
+)
+  throw new Error('Not compatible with express')
 
 app.useServiceRoutes = function () {
   debugServer('using service routes')
@@ -26,4 +30,14 @@ app.useServiceRoutes = function () {
       }
     }
   })
+}
+
+app.usePageRouter = function (config) {
+  const serverService = this.$provider.service('@server')
+  config(serverService.pageRouter)
+}
+
+app.useApiRouter = function (config) {
+  const serverService = this.$provider.service('@server')
+  config(serverService.apiRouter)
 }

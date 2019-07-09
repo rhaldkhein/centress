@@ -2,7 +2,7 @@ import { application as app } from 'express'
 import path from 'path'
 
 if (app.useControllers)
-  throw new Error('Can\'t bind useControllers to express')
+  throw new Error('Not compatible with express')
 
 app.useControllers = function (config) {
   config = config || { paths: ['./controllers'] }

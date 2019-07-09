@@ -14,7 +14,7 @@ const debugRouter = debug('excore:router')
 export default class Server {
   static service = '@server'
 
-  config = null
+  config = {}
   defaults = {
     apiBaseUrl: '/api',
     port: 3000
@@ -27,7 +27,9 @@ export default class Server {
     this.apiRouter = express.Router()
     this.pageRouter = express.Router()
     this.server.$provider = provider
-    this.config = _defaultsDeep({}, options, this.defaults)
+    this.config = _defaultsDeep({},
+      typeof options === 'function' ? options(this) : options,
+      this.defaults)
 
     // First middleware. Attach scoped provider.
     this.server.use((req, res, next) => {
@@ -78,8 +80,7 @@ export default class Server {
       })
     }
 
-    return Promise.resolve()
-      .then(listenServer)
+    return Promise.resolve().then(listenServer)
   }
 
   static start(provider) {
