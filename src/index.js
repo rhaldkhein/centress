@@ -1,34 +1,41 @@
 import path from 'path'
-import express from 'express'
 import callsite from 'callsite'
-import { Builder as BaseBuilder } from 'jservice'
-import Config from './services/config'
-import Server from './services/server'
-import Provider from './provider'
+import express from 'express'
+import BaseBuilder from 'jservice'
+
+// Built-in services
+import Config from './config/service'
+import Server from './server/service'
+import HttpError from './server/error'
+import Controller from './controller/service'
+import Authentication from './authentication/service'
 
 class Builder extends BaseBuilder {
 
   path = null
-  provider = null
   configService = null
 
-  build(registry, configure) {
+  configure(configureServices, configure) {
     this.path = path.dirname(callsite()[1].getFileName())
-    super.build(registry)
-    this.collection.addSingleton(Config)
-    this.collection.addSingleton(Server)
-    this.provider = this.createProvider(true)
-    this.configService = this.provider.getService('$config')
-    const serverService = this.provider.getService('$server')
-    serverService.init()
-    if (typeof configure === 'function') {
-      configure(serverService.app)
-    }
+    // Adding built-in services
+    this._configureDefaultServices(this.collection)
+    // Run registry after all built-in services have been added
+    super.build(configureServices)
+    // Initialize server
+    const serverService = this.provider.service('@server')
+    // Configure server
+    if (typeof configure === 'function')
+      configure(serverService.appRoot)
     return this
   }
 
-  createProvider(isSingleton) {
-    return new Provider(this.collection, this.configService, isSingleton)
+  _configureDefaultServices(services) {
+    services.singleton(Config)
+    services.singleton(Authentication)
+    services.singleton(Controller)
+    services.singleton(Server, provider => {
+      return provider.service('@config').get('server')
+    })
   }
 
 }
@@ -38,7 +45,16 @@ function core() {
 }
 
 export default core
+export * from 'express'
 export {
+  // Functions
   core,
-  express
+  express,
+  // Classes
+  HttpError,
+  // Services
+  Server,
+  Controller,
+  Authentication,
+  Config
 }

@@ -1,12 +1,14 @@
 {
   "name": "excore",
-  "version": "0.0.1",
-  "description": "A small dependency injection framework for Express. Inspired by .Net Core.",
-  "main": "build/index.js",
+  "version": "0.0.0",
+  "description": "A minimalist Express framework with dependency injection for using JService. Inspired by .Net Core.",
+  "main": "lib/index.js",
   "scripts": {
-    "build": "rm -rf build && babel src --out-dir build",
-    "watch": "rm -rf build && babel src --watch --out-dir build",
-    "serve": "DEBUG=excore:* nodemon sample/test",
+    "build": "rm -rf lib && babel src --out-dir lib",
+    "watch": "rm -rf lib && babel src --watch --out-dir lib",
+    "watch-sample": "rm -rf sample/basic/lib && babel sample/basic/src --watch --out-dir sample/basic/lib",
+    "sample": "DEBUG=excore:* nodemon sample/basic/lib",
+    "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,30 +24,36 @@
   "keywords": [
     "express",
     "modular",
-    "dependency",
-    "injection",
-    "framework"
+    "dependency injection",
+    "services",
+    "framework",
+    "ioc",
+    "di"
   ],
   "dependencies": {
     "callsite": "^1.0.0",
     "debug": "^4.1.1",
     "express": "^4.17.1",
-    "jservice": "^0.1.7",
+    "glob": "^7.1.4",
+    "jservice": "^0.1.18",
     "lodash.defaultsdeep": "^4.6.0",
-    "lodash.get": "^4.4.2"
+    "lodash.get": "^4.4.2",
+    "passport": "^0.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.5",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-decorators": "^7.4.4",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/preset-env": "^7.4.5",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "passport-local": "^1.0.0"
   },
   "files": [
     "src",
-    "build"
+    "lib"
   ]
 }
