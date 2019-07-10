@@ -1,4 +1,4 @@
-import { page, get, api, post, authorize } from '../../../../build/controller'
+import { page, get, api, post, authorize } from '../../../../lib/controller'
 
 @authorize()
 @page('user') // 5

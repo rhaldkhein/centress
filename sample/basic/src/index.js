@@ -1,4 +1,4 @@
-import core from '../../../build'
+import core from '../../../lib'
 import { configureServices, configureApplication } from './startup'
 
 const app = core()

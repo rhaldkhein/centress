@@ -77,21 +77,16 @@ export function configureApplication(app) {
 Controller
 
 ```javascript
-import { get, api, post, authorize } from 'excore/controller'
+import { api, post, authorize } from 'excore/controller'
 
 @authorize()
 @api('user') 
 class User {
 
-  @post('world') 
-  world(req, res) {
+  // POST /api/user/create
+  @post('create') 
+  create(req, res) {
     res.jsonSuccess({ world: 'post' })
-  }
-
-  @get('foo') 
-  @get('hello')
-  hello(req, res) {
-    res.jsonSuccess({ hello: 'get' })
   }
 
 }

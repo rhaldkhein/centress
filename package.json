@@ -1,13 +1,14 @@
 {
   "name": "excore",
   "version": "0.0.0",
-  "description": "A dependency injection framework for Express. Inspired by .Net Core.",
-  "main": "build/index.js",
+  "description": "A minimalist Express framework with dependency injection for using JService. Inspired by .Net Core.",
+  "main": "lib/index.js",
   "scripts": {
-    "build": "rm -rf build && babel src --out-dir build",
-    "watch": "rm -rf build && babel src --watch --out-dir build",
-    "watch-sample": "rm -rf sample/basic/build && babel sample/basic/src --watch --out-dir sample/basic/build",
-    "sample": "DEBUG=excore:* nodemon sample/basic/build",
+    "build": "rm -rf lib && babel src --out-dir lib",
+    "watch": "rm -rf lib && babel src --watch --out-dir lib",
+    "watch-sample": "rm -rf sample/basic/lib && babel sample/basic/src --watch --out-dir sample/basic/lib",
+    "sample": "DEBUG=excore:* nodemon sample/basic/lib",
+    "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,9 +24,11 @@
   "keywords": [
     "express",
     "modular",
-    "dependency",
-    "injection",
-    "framework"
+    "dependency injection",
+    "services",
+    "framework",
+    "ioc",
+    "di"
   ],
   "dependencies": {
     "callsite": "^1.0.0",
@@ -51,6 +54,6 @@
   },
   "files": [
     "src",
-    "build"
+    "lib"
   ]
 }
