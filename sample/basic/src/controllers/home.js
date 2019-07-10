@@ -6,10 +6,8 @@ class Home {
 
   @authorize(false)
   @get('open')
-  @post('open')
   open(req, res) {
-    const yoo = req.service('yoo')
-    console.log(yoo)
+    req.service('yoo')
     res.jsonSuccess('open route')
   }
 

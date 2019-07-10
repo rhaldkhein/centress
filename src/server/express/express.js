@@ -5,8 +5,7 @@ const debugServer = debug('excore:server')
 
 if (
   app.useServiceRoutes
-  || app.usePageRouter
-  || app.useApiRouter
+  || app.useApi
 )
   throw new Error('Not compatible with express')
 
@@ -19,25 +18,20 @@ app.useServiceRoutes = function () {
     if (Service.type === collection.types.SINGLETON) {
       let baseUrl = Service.baseUrl || '/' + Service.service
       if (Service.api) {
-        let apiRouter = express.Router()
-        Service.api(apiRouter)
-        serverService.apiRouter.use(baseUrl, apiRouter)
+        let appApi = express.Router()
+        Service.api(appApi)
+        serverService.appApi.use(baseUrl, appApi)
       }
       if (Service.page) {
         let pageRouter = express.Router()
         Service.page(pageRouter)
-        serverService.pageRouter.use(baseUrl, pageRouter)
+        serverService.appRoot.use(baseUrl, pageRouter)
       }
     }
   })
 }
 
-app.usePageRouter = function (config) {
+app.useApi = function (config) {
   const serverService = this.$provider.service('@server')
-  config(serverService.pageRouter)
-}
-
-app.useApiRouter = function (config) {
-  const serverService = this.$provider.service('@server')
-  config(serverService.apiRouter)
+  config(serverService.appApi)
 }

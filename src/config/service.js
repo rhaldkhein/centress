@@ -10,7 +10,7 @@ const prod = process.env.NODE_ENV === 'production'
 export default class Config {
   static service = '@config'
 
-  _config = null
+  config = null
 
   constructor(provider, opt) {
     const core = provider.service('__core__')
@@ -34,12 +34,12 @@ export default class Config {
     } catch (e) {
       // Nothing
     }
-    this._config = _defaultsDeep(prod ? {} : devConfig, config)
+    this.config = _defaultsDeep(prod ? {} : devConfig, config)
     debugConfig('created ...%s', file.substr(file.length - 24))
   }
 
   get(path, defaultValue) {
-    return _get(this._config, path, defaultValue)
+    return _get(this.config, path, defaultValue)
   }
 
 }

@@ -10,7 +10,7 @@ class User {
     res.jsonSuccess({ world: 'post' })
   }
 
-  @get('foo') // 3
+  @authorize(false)
   @get('hello') // 2
   hello(req, res) {
     res.jsonSuccess({ hello: 'get' })

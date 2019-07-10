@@ -4,7 +4,7 @@ import Yoo from './services/yoo'
 import Baz from './services/baz'
 
 import { Strategy as LocalStrategy } from 'passport-local'
-import { HttpError, Authentication, Server } from '../../../build'
+import { HttpError, Authentication } from '../../../build'
 
 export function configureServices(services) {
 
@@ -38,20 +38,20 @@ export function configureServices(services) {
 
 export function configureApplication(app) {
 
-  app.useAuthentication()
+  app.useApi(api => {
+    api.useAuthentication()
+  })
+
   app.useControllers()
 
-  app.usePageRouter(router => {
+  // app.useApiRouter(api => {
+  //   api.use((err, req, res, next) => {
+  //     res.jsonError().internal()
+  //   })
+  // })
 
-    router.use((req, res) => {
-      // throw new Error('XXX')
-      res.send('404')
-    })
-
-    router.use((err, req, res, next) => {
-      res.send('500')
-    })
-
+  app.use((err, req, res, next) => {
+    res.jsonError().badRequest(err)
   })
 
 }

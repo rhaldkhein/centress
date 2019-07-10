@@ -25,7 +25,7 @@ class Builder extends BaseBuilder {
     const serverService = this.provider.service('@server')
     // Configure server
     if (typeof configure === 'function')
-      configure(serverService.server)
+      configure(serverService.appRoot)
     return this
   }
 

@@ -66,7 +66,6 @@ export function authorize(...args) {
   }
 }
 
-
 // METHODS
 
 export function get(...args) {

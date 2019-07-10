@@ -22,21 +22,23 @@ export default class Server {
 
   constructor(provider, options) {
     this.core = provider.service('__core__')
-    this.server = express()
-    this.http = http.Server(this.server)
-    this.apiRouter = express.Router()
-    this.pageRouter = express.Router()
-    this.server.$provider = provider
+    // Create app instances
+    this.appRoot = express()
+    this.http = http.Server(this.appRoot)
+    this.appApi = express()
+    // Attach provider to apps
+    this.appRoot.$provider = provider
+    this.appApi.$provider = provider
+    // Apply configs
     this.config = _defaultsDeep({},
       typeof options === 'function' ? options(this) : options,
       this.defaults)
 
     // First middleware. Attach scoped provider.
-    this.server.use((req, res, next) => {
-      debugRouter(req.url)
+    this.appRoot.use((req, res, next) => {
+      debugRouter(req.method + ' ' + req.url)
       // Attache new scoped provider
       req.provider = this.core.createScopedProvider()
-      res.set('X-Powered-By', 'Express; Excore')
       next()
     })
     debugServer('created')
@@ -47,20 +49,19 @@ export default class Server {
     debugServer('starting http')
 
     // Infuse di container to request
-    this.server.use(this.core.init())
+    this.appRoot.use(this.core.init())
 
     // Attach primary routers
-    this.server.use(this.config.apiBaseUrl, this.apiRouter)
-    this.server.use(this.pageRouter)
+    this.appRoot.use(this.config.apiBaseUrl, this.appApi)
 
     // Last middleware
-    this.apiRouter.use((req, res) => {
-      res.jsonError().notFound()
+    this.appApi.use((req, res) => {
+      res.jsonError().notFound('Route not found')
     })
 
     // Catch and flush error for API
     // eslint-disable-next-line no-unused-vars
-    this.apiRouter.use((err, req, res, next) => {
+    this.appApi.use((err, req, res, next) => {
       if (err instanceof HttpError) {
         if (!err.res) err.res = res
         return err.send()
