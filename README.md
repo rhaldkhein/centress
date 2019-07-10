@@ -1,6 +1,6 @@
 # Excore
 
-A minimalist Express framework with dependency injection for using [JService](https://github.com/rhaldkhein/jservice). Inspired by .Net Core.
+A minimalist Express framework with dependency injection using [JService](https://github.com/rhaldkhein/jservice). Inspired by .Net Core.
 
 JService is a small and powerful pure javascript DI container that favors code over configuration, less oppinionated, no automatic dependency resolution, and with dependency scoping such as Singleton, Scoped and Transient.
 
