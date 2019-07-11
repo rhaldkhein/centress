@@ -2,11 +2,11 @@ import path from 'path'
 import callsite from 'callsite'
 import express from 'express'
 import BaseBuilder from 'jservice'
+import HttpError from './server/error'
 
 // Built-in services
 import Config from './config/service'
 import Server from './server/service'
-import HttpError from './server/error'
 import Controller from './controller/service'
 import Authentication from './authentication/service'
 

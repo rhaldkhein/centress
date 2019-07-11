@@ -16,7 +16,7 @@ var _baz = _interopRequireDefault(require("./services/baz"));
 
 var _passportLocal = require("passport-local");
 
-var _lib = require("../../../lib");
+var _index = require("../../../index");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -25,13 +25,13 @@ function configureServices(services) {
   services.singleton(_bar["default"]);
   services["transient"](_yoo["default"]);
   services.scoped(_baz["default"]);
-  services.configure(_lib.Authentication, function () {
+  services.configure(_index.Authentication, function () {
     return function (auth) {
       auth.addAuthorize('local', 'local', {
         session: false
       });
       auth.use(new _passportLocal.Strategy(function (username, password, done) {
-        var err = new _lib.HttpError();
+        var err = new _index.HttpError();
         err.unauthorized();
         return done(err); // done(null, {
         //   id: 1,

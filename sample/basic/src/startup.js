@@ -4,7 +4,7 @@ import Yoo from './services/yoo'
 import Baz from './services/baz'
 
 import { Strategy as LocalStrategy } from 'passport-local'
-import { HttpError, Authentication } from '../../../lib'
+import { HttpError, Authentication } from '../../../index'
 
 export function configureServices(services) {
 
