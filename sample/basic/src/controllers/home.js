@@ -1,17 +1,17 @@
-import { get, post, page, api, authorize } from '../../../../lib/controller'
+import { get, page, authorize } from '../../../../controller'
 
 @authorize()
-@api('home')
+@page('index')
 class Home {
 
-  @authorize(false)
+  // @authorize(false)
   @get('open')
   open(req, res) {
     req.service('yoo')
     res.jsonSuccess('open route')
   }
 
-  @get('closed')
+  @get('index')
   closed(req, res) {
     res.send('closed route')
   }

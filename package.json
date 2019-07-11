@@ -1,8 +1,8 @@
 {
   "name": "excore",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "A minimalist Express framework with dependency injection for using JService. Inspired by .Net Core.",
-  "main": "lib/index.js",
+  "main": "index.js",
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
     "watch": "rm -rf lib && babel src --watch --out-dir lib",

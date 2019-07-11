@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _controller = require("../../../../lib/controller");
+var _controller = require("../../../../controller");
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -39,7 +39,7 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var Home = _decorate([(0, _controller.authorize)(), (0, _controller.api)('home')], function (_initialize) {
+var Home = _decorate([(0, _controller.authorize)(), (0, _controller.page)('index')], function (_initialize) {
   var Home = function Home() {
     _classCallCheck(this, Home);
 
@@ -50,15 +50,16 @@ var Home = _decorate([(0, _controller.authorize)(), (0, _controller.api)('home')
     F: Home,
     d: [{
       kind: "method",
-      decorators: [(0, _controller.authorize)(false), (0, _controller.get)('open')],
+      decorators: [(0, _controller.get)('open')],
       key: "open",
-      value: function open(req, res) {
+      value: // @authorize(false)
+      function open(req, res) {
         req.service('yoo');
         res.jsonSuccess('open route');
       }
     }, {
       kind: "method",
-      decorators: [(0, _controller.get)('closed')],
+      decorators: [(0, _controller.get)('index')],
       key: "closed",
       value: function closed(req, res) {
         res.send('closed route');

@@ -1,5 +1,7 @@
-import glob from 'glob'
 import debug from 'debug'
+import glob from 'glob'
+import path from 'path'
+import _defaultsDeep from 'lodash.defaultsdeep'
 import { _flush } from './decorators'
 import './express'
 
@@ -8,16 +10,27 @@ const debugCtrl = debug('excore:controller')
 export default class Controller {
   static service = '@controller'
 
+  options = {
+    paths: ['./controllers'],
+    default: 'index',
+    mapRoutes: []
+  }
+
   constructor(provider) {
+    this.core = provider.service('__core__')
     this.server = provider.service('@server')
     this.auth = provider.service('@authentication')
     debugCtrl('created')
   }
 
-  mountPaths(paths) {
+  setOptions(options) {
+    this.options = _defaultsDeep(options, this.options)
+  }
+
+  mountControllers() {
+    const paths = this.options.paths.map(p => path.resolve(this.core.path, p))
     paths.forEach(path => {
-      glob
-        .sync(path + '/**/*.js')
+      glob.sync(path + '/**/*.js')
         .forEach(file => {
           require(file)
           this._register(_flush())
@@ -32,15 +45,16 @@ export default class Controller {
       if (methods.hasOwnProperty(key)) {
         const des = methods[key]
         if (des.api)
-          this._addMethod(this.server.appApi, des, '/' + des.api[0])
+          this._addMethod(this.server.appApi, des, des.api[0])
         if (des.page)
-          this._addMethod(this.server.appRoot, des, '/' + des.page[0])
+          this._addMethod(this.server.appRoot, des, des.page[0])
       }
     }
   }
 
-  _addMethod(router, des, baseUrl) {
-    if (!baseUrl) return
+  _addMethod(router, des, ctrl) {
+    if (!ctrl) return
+    if (ctrl === this.options.default) ctrl = ''
     let mw = [] // middlewares
     // Add authentication
     if (des.auth) {
@@ -54,16 +68,41 @@ export default class Controller {
       }
     }
     // Add middlewares
-    if (des.httpGet && des.httpGet[0])
-      router.get(baseUrl + '/' + des.httpGet[0], mw, des.value)
-    if (des.httpPost && des.httpPost[0])
-      router.post(baseUrl + '/' + des.httpPost[0], mw, des.value)
-    if (des.httpPut && des.httpPut[0])
-      router.put(baseUrl + '/' + des.httpPut[0], mw, des.value)
-    if (des.httpDelete && des.httpDelete[0])
-      router.delete(baseUrl + '/' + des.httpDelete[0], mw, des.value)
-    if (des.httpPatch && des.httpPatch[0])
-      router.patch(baseUrl + '/' + des.httpPatch[0], mw, des.value)
+    if (des.httpGet)
+      this._addHandler(router, 'get', ctrl, des.httpGet[0], mw, des.value)
+    if (des.httpPost)
+      this._addHandler(router, 'post', ctrl, des.httpPost[0], mw, des.value)
+    if (des.httpPut)
+      this._addHandler(router, 'put', ctrl, des.httpPut[0], mw, des.value)
+    if (des.httpDelete)
+      this._addHandler(router, 'delete', ctrl, des.httpDelete[0], mw, des.value)
+    if (des.httpPatch)
+      this._addHandler(router, 'patch', ctrl, des.httpPatch[0], mw, des.value)
+  }
+
+  /**
+   * Do not register action if the controller is default as this will 
+   * make the action to act like a controller.
+   */
+  _addHandler(router, method, ctrl, action, mw, value) {
+    if (!action) return
+    if (action === this.options.default) action = ''
+    else if (!ctrl) return
+    // Scan for mapped paths
+    const destPath = '/' + ctrl + '/' + action
+    router[method]([...this._getMapPaths(destPath), destPath], mw, value)
+  }
+
+  _getMapPaths(destPath) {
+    for (let i = 0; i < this.options.mapRoutes.length; i++) {
+      const item = this.options.mapRoutes[i]
+      if (destPath === item[item.length - 1]) {
+        const clonedItem = [...item]
+        clonedItem.pop()
+        return clonedItem
+      }
+    }
+    return []
   }
 
 }
