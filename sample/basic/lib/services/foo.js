@@ -20,7 +20,7 @@ function () {
     _classCallCheck(this, Foo);
   }
 
-  _createClass(Foo, [{
+  _createClass(Foo, null, [{
     key: "api",
     value: function api(apiRouter) {
       apiRouter.get('/test', function (req, res, next) {

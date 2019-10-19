@@ -13,7 +13,7 @@ export default class Config {
   config = null
 
   constructor(provider, opt) {
-    const core = provider.service('__core__')
+    const core = provider.service('core')
     const option = _defaultsDeep({}, opt, {
       file: './config.js',
       devFile: './config.dev.js'

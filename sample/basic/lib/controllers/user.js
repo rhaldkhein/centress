@@ -52,16 +52,25 @@ User = _decorate([(0, _controller.authorize)(), (0, _controller.page)('user')], 
     F: User,
     d: [{
       kind: "method",
+      decorators: [(0, _controller.authorize)(false), (0, _controller.get)('index')],
+      key: "closed",
+      value: function closed(req, res) {
+        req.service('bar');
+        res.send('user index');
+      }
+    }, {
+      kind: "method",
       decorators: [(0, _controller.post)('world')],
       key: "world",
       value: function world(req, res) {
         res.jsonSuccess({
           world: 'post'
         });
-      }
+      } // @authorize(false)
+
     }, {
       kind: "method",
-      decorators: [(0, _controller.authorize)(false), (0, _controller.get)('hello')],
+      decorators: [(0, _controller.get)('hello')],
       key: "hello",
       value: function hello(req, res) {
         res.jsonSuccess({

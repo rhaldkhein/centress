@@ -20,7 +20,7 @@ function () {
     _classCallCheck(this, Baz);
   }
 
-  _createClass(Baz, [{
+  _createClass(Baz, null, [{
     key: "api",
     value: function api(apiRouter) {
       apiRouter.get('/test', function (req, res, next) {

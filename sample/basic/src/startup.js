@@ -43,6 +43,7 @@ export function configureApplication(app) {
   })
 
   app.useControllers()
+  app.useServiceRoutes()
 
   // app.useApiRouter(api => {
   //   api.use((err, req, res, next) => {

@@ -2,7 +2,8 @@
 export default class Bar {
   static service = 'bar'
 
-  api(apiRouter) {
+
+  static api(apiRouter) {
 
     apiRouter.get('/test', (req, res, next) => {
       req.service('foo') // singleton
@@ -12,14 +13,15 @@ export default class Bar {
     })
 
     apiRouter.get('/test', (req, res) => {
-      req.service('foo') // singleton
-      req.service('yoo') // transient
-      res.jsonError().badRequest()
+      // req.service('foo') // singleton
+      // const yoo = req.service('yoo') // transient
+      // res.jsonError().badRequest()
+      res.json({ a: 1 })
     })
 
   }
 
-  page(pageRouter) {
+  static page(pageRouter) {
     pageRouter.get('/page', (req, res) => {
       res.send('page')
     })

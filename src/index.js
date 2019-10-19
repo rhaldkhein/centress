@@ -33,7 +33,8 @@ class Builder extends BaseBuilder {
     services.singleton(Config)
     services.singleton(Authentication)
     services.singleton(Controller)
-    services.singleton(Server, provider => {
+    services.singleton(Server)
+    services.configure(Server, provider => {
       return provider.service('@config').get('server')
     })
   }

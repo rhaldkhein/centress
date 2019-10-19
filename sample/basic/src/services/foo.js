@@ -2,7 +2,7 @@
 export default class Foo {
   static service = 'foo'
 
-  api(apiRouter) {
+  static api(apiRouter) {
     apiRouter.get('/test', (req, res, next) => {
       next()
     })

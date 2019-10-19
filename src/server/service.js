@@ -1,7 +1,7 @@
+import express from 'express'
+import http, { IncomingMessage } from 'http'
 import _defaultsDeep from 'lodash.defaultsdeep'
 import debug from 'debug'
-import express from 'express'
-import http from 'http'
 import HttpError from './error'
 
 import './express/express'
@@ -21,7 +21,7 @@ export default class Server {
   }
 
   constructor(provider, options) {
-    this.core = provider.service('__core__')
+    this.core = provider.service('core')
     // Create app instances
     this.appRoot = express()
     this.http = http.Server(this.appRoot)
@@ -38,7 +38,7 @@ export default class Server {
     this.appRoot.use((req, res, next) => {
       debugRouter(req.method + ' ' + req.url)
       // Attache new scoped provider
-      req.provider = this.core.createScopedProvider()
+      req.provider = this.core.createProvider()
       next()
     })
     debugServer('created')
@@ -49,7 +49,7 @@ export default class Server {
     debugServer('starting http')
 
     // Infuse di container to request
-    this.appRoot.use(this.core.init())
+    this.appRoot.use(this.core.init(IncomingMessage.prototype))
 
     // Attach primary routers
     this.appRoot.use(this.config.apiBaseUrl, this.appApi)
