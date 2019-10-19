@@ -45,11 +45,8 @@ function core() {
   return new Builder()
 }
 
-export default core
-export * from 'express'
-export {
+Object.assign(core, {
   // Functions
-  core,
   express,
   // Classes
   HttpError,
@@ -58,4 +55,6 @@ export {
   Controller,
   Authentication,
   Config
-}
+})
+
+export default core
