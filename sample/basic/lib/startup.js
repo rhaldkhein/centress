@@ -53,7 +53,8 @@ function configureApplication(app) {
   app.useApi(function (api) {
     api.useAuthentication();
   });
-  app.useControllers(); // app.useApiRouter(api => {
+  app.useControllers();
+  app.useServiceRoutes(); // app.useApiRouter(api => {
   //   api.use((err, req, res, next) => {
   //     res.jsonError().internal()
   //   })

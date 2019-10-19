@@ -1,10 +1,10 @@
 import { get, page, authorize } from '../../../../controller'
 
-@authorize()
+// @authorize()
 @page('index')
 class Home {
 
-  // @authorize(false)
+  @authorize(false)
   @get('open')
   open(req, res) {
     req.service('yoo')

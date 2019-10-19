@@ -20,7 +20,7 @@ function () {
     _classCallCheck(this, Bar);
   }
 
-  _createClass(Bar, [{
+  _createClass(Bar, null, [{
     key: "api",
     value: function api(apiRouter) {
       apiRouter.get('/test', function (req, res, next) {
@@ -32,11 +32,12 @@ function () {
         next();
       });
       apiRouter.get('/test', function (req, res) {
-        req.service('foo'); // singleton
-
-        req.service('yoo'); // transient
-
-        res.jsonError().badRequest();
+        // req.service('foo') // singleton
+        // const yoo = req.service('yoo') // transient
+        // res.jsonError().badRequest()
+        res.json({
+          a: 1
+        });
       });
     }
   }, {

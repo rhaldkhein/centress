@@ -17,7 +17,7 @@ export default class Controller {
   }
 
   constructor(provider) {
-    this.core = provider.service('__core__')
+    this.core = provider.service('core')
     this.server = provider.service('@server')
     this.auth = provider.service('@authentication')
     debugCtrl('created')

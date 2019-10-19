@@ -22,11 +22,13 @@ function () {
     _defineProperty(this, "greet", 'Hi! This is Yoo.');
   }
 
-  _createClass(Yoo, [{
+  _createClass(Yoo, null, [{
     key: "api",
     value: function api(apiRouter) {
-      apiRouter.get('/test', function (req, res, next) {
-        next();
+      apiRouter.get('/test', function (req, res) {
+        res.sendJson({
+          foo: 1
+        }); // next()
       });
     }
   }]);

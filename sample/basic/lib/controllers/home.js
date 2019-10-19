@@ -39,7 +39,8 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var Home = _decorate([(0, _controller.authorize)(), (0, _controller.page)('index')], function (_initialize) {
+// @authorize()
+var Home = _decorate([(0, _controller.page)('index')], function (_initialize) {
   var Home = function Home() {
     _classCallCheck(this, Home);
 
@@ -50,10 +51,9 @@ var Home = _decorate([(0, _controller.authorize)(), (0, _controller.page)('index
     F: Home,
     d: [{
       kind: "method",
-      decorators: [(0, _controller.get)('open')],
+      decorators: [(0, _controller.authorize)(false), (0, _controller.get)('open')],
       key: "open",
-      value: // @authorize(false)
-      function open(req, res) {
+      value: function open(req, res) {
         req.service('yoo');
         res.jsonSuccess('open route');
       }

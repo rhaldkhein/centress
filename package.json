@@ -4,9 +4,11 @@
   "description": "A minimalist Express framework with dependency injection for using JService. Inspired by .Net Core.",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf lib && babel src --out-dir lib",
-    "watch": "rm -rf lib && babel src --watch --out-dir lib",
-    "watch-sample": "rm -rf sample/basic/lib && babel sample/basic/src --watch --out-dir sample/basic/lib",
+    "clean": "rm -rf lib",
+    "clean-sample": "rm -rf sample/basic/lib",
+    "build": "npm run clean && babel src --out-dir lib",
+    "watch": "npm run clean && babel src --watch --out-dir lib",
+    "watch-sample": "npm run clean-sample && babel sample/basic/src --watch --out-dir sample/basic/lib",
     "sample": "DEBUG=excore:* nodemon sample/basic/lib",
     "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -35,7 +37,7 @@
     "debug": "^4.1.1",
     "express": "^4.17.1",
     "glob": "^7.1.4",
-    "jservice": "^0.1.18",
+    "jservice": "^0.3.2",
     "lodash.defaultsdeep": "^4.6.0",
     "lodash.get": "^4.4.2",
     "passport": "^0.4.0"

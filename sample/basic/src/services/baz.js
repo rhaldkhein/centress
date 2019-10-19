@@ -2,7 +2,7 @@
 export default class Baz {
   static service = 'baz'
 
-  api(apiRouter) {
+  static api(apiRouter) {
     apiRouter.get('/test', (req, res, next) => {
       next()
     })

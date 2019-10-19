@@ -12,19 +12,20 @@ if (
 app.useServiceRoutes = function () {
   debugServer('using service routes')
   const serverService = this.$provider.service('@server')
-  const collection = this.$provider.service('__core__').collection
+  const collection = this.$provider.service('core').collection
   const services = collection.services
-  services.forEach(Service => {
-    if (Service.type === collection.types.SINGLETON) {
-      let baseUrl = Service.baseUrl || '/' + Service.service
-      if (Service.api) {
+  services.forEach(service => {
+    if (service.type === collection.types.SINGLETON) {
+      const { value } = service
+      let baseUrl = value.baseUrl || '/' + service.name
+      if (value.api) {
         let appApi = express.Router()
-        Service.api(appApi)
+        value.api(appApi)
         serverService.appApi.use(baseUrl, appApi)
       }
-      if (Service.page) {
+      if (value.page) {
         let pageRouter = express.Router()
-        Service.page(pageRouter)
+        value.page(pageRouter)
         serverService.appRoot.use(baseUrl, pageRouter)
       }
     }

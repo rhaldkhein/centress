@@ -33,7 +33,8 @@ class Builder extends BaseBuilder {
     services.singleton(Config)
     services.singleton(Authentication)
     services.singleton(Controller)
-    services.singleton(Server, provider => {
+    services.singleton(Server)
+    services.configure(Server, provider => {
       return provider.service('@config').get('server')
     })
   }
@@ -44,11 +45,8 @@ function core() {
   return new Builder()
 }
 
-export default core
-export * from 'express'
-export {
+Object.assign(core, {
   // Functions
-  core,
   express,
   // Classes
   HttpError,
@@ -57,4 +55,6 @@ export {
   Controller,
   Authentication,
   Config
-}
+})
+
+export default core

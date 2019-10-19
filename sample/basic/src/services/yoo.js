@@ -4,9 +4,10 @@ export default class Yoo {
 
   greet = 'Hi! This is Yoo.'
 
-  api(apiRouter) {
-    apiRouter.get('/test', (req, res, next) => {
-      next()
+  static api(apiRouter) {
+    apiRouter.get('/test', (req, res) => {
+      res.sendJson({ foo: 1 })
+      // next()
     })
   }
 
