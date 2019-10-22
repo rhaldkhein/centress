@@ -67,6 +67,8 @@ export default class Controller {
           des.auth[1], des.auth[2]))
       }
     }
+    // Append middlewares
+    if (des.middleware) mw = mw.concat(des.middleware)
     // Add middlewares
     if (des.httpGet)
       this._addHandler(router, 'get', ctrl, des.httpGet[0], mw, des.value)

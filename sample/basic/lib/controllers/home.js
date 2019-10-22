@@ -51,14 +51,6 @@ var Home = _decorate([(0, _controller.page)('index')], function (_initialize) {
     F: Home,
     d: [{
       kind: "method",
-      decorators: [(0, _controller.authorize)(false), (0, _controller.get)('open')],
-      key: "open",
-      value: function open(req, res) {
-        req.service('yoo');
-        res.jsonSuccess('open route');
-      }
-    }, {
-      kind: "method",
       decorators: [(0, _controller.get)('index')],
       key: "closed",
       value: function closed(req, res) {
