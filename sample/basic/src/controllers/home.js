@@ -1,15 +1,8 @@
-import { get, page, authorize } from '../../../../controller'
+import { get, page } from '../../../../controller'
 
 // @authorize()
 @page('index')
 class Home {
-
-  @authorize(false)
-  @get('open')
-  open(req, res) {
-    req.service('yoo')
-    res.jsonSuccess('open route')
-  }
 
   @get('index')
   closed(req, res) {

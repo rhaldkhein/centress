@@ -68,37 +68,33 @@ export function authorize(...args) {
 
 // METHODS
 
-export function get(...args) {
+function forMethod(fn) {
   return function (target) {
     if (target.kind !== 'method') return
-    decor(target).httpGet = args
+    fn(decor(target))
   }
+}
+
+export function before(...args) {
+  return forMethod(decor => decor.middleware = args)
+}
+
+export function get(...args) {
+  return forMethod(decor => decor.httpGet = args)
 }
 
 export function put(...args) {
-  return function (target) {
-    if (target.kind !== 'method') return
-    decor(target).httpPut = args
-  }
+  return forMethod(decor => decor.httpPut = args)
 }
 
 export function post(...args) {
-  return function (target) {
-    if (target.kind !== 'method') return
-    decor(target).httpPost = args
-  }
+  return forMethod(decor => decor.httpPost = args)
 }
 
 export function del(...args) {
-  return function (target) {
-    if (target.kind !== 'method') return
-    decor(target).httpDelete = args
-  }
+  return forMethod(decor => decor.httpDelete = args)
 }
 
 export function patch(...args) {
-  return function (target) {
-    if (target.kind !== 'method') return
-    decor(target).httpPatch = args
-  }
+  return forMethod(decor => decor.httpPatch = args)
 }
