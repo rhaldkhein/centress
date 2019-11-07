@@ -84,9 +84,4 @@ export default class Server {
     return Promise.resolve().then(listenServer)
   }
 
-  static start(provider) {
-    const server = provider.service('@server')
-    return server.listen()
-  }
-
 }
