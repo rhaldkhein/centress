@@ -7,7 +7,7 @@ if (response.jsonError)
 response.jsonError = function (error) {
   if (!(error instanceof AppError)) {
     error = new AppError(
-      error.payload || error.defaults,
+      error.payload || error.details,
       error.meta,
       error.message,
       error.status,
