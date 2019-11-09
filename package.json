@@ -1,6 +1,6 @@
 {
   "name": "excore",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "A minimalist Express framework with dependency injection for using JService. Inspired by .Net Core.",
   "main": "index.js",
   "scripts": {
