@@ -2,7 +2,7 @@ import express from 'express'
 import http, { IncomingMessage } from 'http'
 import _defaultsDeep from 'lodash.defaultsdeep'
 import debug from 'debug'
-import HttpError from './error'
+import { AppError } from './error'
 
 import './express/express'
 import './express/response'
@@ -62,9 +62,8 @@ export default class Server {
     // Catch and flush error for API
     // eslint-disable-next-line no-unused-vars
     this.appApi.use((err, req, res, next) => {
-      if (err instanceof HttpError) {
-        if (!err.res) err.res = res
-        return err.send()
+      if (err instanceof AppError) {
+        return err.send(res)
       }
       res.jsonError().internal(prod ? null : err.message)
       debugServer('error', err)

@@ -6,4 +6,6 @@ const app = core()
 app.configure(
   configureServices,
   configureApplication
-).start()
+).on('start', prov => {
+  prov.get('@server').listen()
+}).start()
