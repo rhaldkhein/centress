@@ -2,7 +2,6 @@ import path from 'path'
 import callsite from 'callsite'
 import express from 'express'
 import BaseBuilder from 'jservice'
-import HttpError from './server/error'
 
 // Built-in services
 import Config from './config/service'
@@ -48,8 +47,6 @@ function core() {
 Object.assign(core, {
   // Functions
   express,
-  // Classes
-  HttpError,
   // Services
   Server,
   Controller,

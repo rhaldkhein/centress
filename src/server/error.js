@@ -1,101 +1,77 @@
 const prod = process.env.NODE_ENV === 'production'
-const defaultCode = 'INTERNAL_ERROR'
-const defaultMessage = 'Something went wrong'
-const defaultStatus = 500
 
-export default class HttpError extends Error {
+export class AppError extends Error {
 
-  code = defaultCode
-  status = defaultStatus
-
-  constructor(res) {
-    super(defaultMessage)
-    this.res = res
+  constructor(
+    payload,
+    meta,
+    message = 'Something went wrong',
+    status = 500,
+    code = 'INTERNAL') {
+    super(message)
+    this.code = code
+    this.status = status
+    this.payload = payload
+    this.meta = meta
   }
 
-  send(opt) {
-    if (typeof opt === 'string') opt = { message: opt }
-    else opt = opt || {}
-    if (opt.message) this.message = opt.message
-    if (opt.status) this.status = opt.status
-    if (opt.code) this.code = opt.code
-    if (opt.payload) this.payload = opt.payload
-    if (opt.meta) this.meta = opt.meta
-    if (this.res) {
-      this.res.status(this.status).json({
-        error: {
-          code: this.code,
-          message: prod ? null : this.message
-        },
-        meta: this.meta,
-        payload: this.payload
-      })
-    }
+  send(res) {
+    res.status(this.status).json({
+      error: {
+        code: this.code,
+        message: prod ? null : this.message
+      },
+      meta: this.meta,
+      payload: this.payload
+    })
   }
 
-  // 400
-  badRequest(o) {
-    this.status = 400
-    this.code = 'BAD_REQUEST'
-    this.message = 'Something is wrong with the request'
-    this.send(o)
-  }
+}
 
-  unauthorized(o) {
-    this.status = 401
-    this.code = 'UNAUTHORIZED'
-    this.message = 'A valid authentication is required'
-    this.send(o)
-  }
+// 400
 
-  forbidden(o) {
-    this.status = 403
-    this.code = 'FORBIDDEN'
-    this.message = 'Client is not allowed to request'
-    this.send(o)
-  }
+export function badRequest(payload, meta, msg = 'Bad request') {
+  return new AppError(payload, meta, msg, 400, 'BAD_REQUEST')
+}
 
-  notFound(o) {
-    this.status = 404
-    this.code = 'NOT_FOUND'
-    this.message = 'Did not find anything matching the request'
-    this.send(o)
-  }
+export function unauthorized(payload, meta, msg = 'Not authorized') {
+  return new AppError(payload, meta, msg, 401, 'UNAUTHORIZED')
+}
 
-  conflict(o) {
-    this.status = 409
-    this.code = 'CONFLICT'
-    this.message = 'Could not be completed due to a conflict'
-    this.send(o)
-  }
+export function forbidden(payload, meta, msg = 'Not allowed') {
+  return new AppError(payload, meta, msg, 403, 'FORBIDDEN')
+}
 
-  validation(o) {
-    this.status = 400
-    this.code = 'VALIDATION'
-    this.message = 'The form contains invalid fields'
-    this.send(o)
-  }
+export function notFound(payload, meta, msg = 'Not found') {
+  return new AppError(payload, meta, msg, 404, 'NOT_FOUND')
+}
 
-  // 500
-  internal(o) {
-    this.status = defaultStatus
-    this.code = defaultCode
-    this.message = defaultMessage
-    this.send(o)
-  }
+export function conflict(payload, meta, msg = 'Conflict') {
+  return new AppError(payload, meta, msg, 409, 'CONFLICT')
+}
 
-  unavailable(o) {
-    this.status = 503
-    this.code = 'UNAVAILABLE'
-    this.message = 'Request is currently unavailable'
-    this.send(o)
-  }
+export function alreadyExists(payload, meta, msg = 'Already exists') {
+  return conflict(payload, meta, msg)
+}
 
-  notImplemented(o) {
-    this.status = 501
-    this.code = 'NOT_IMPLEMENTED'
-    this.message = 'Functionality not supported yet'
-    this.send(o)
-  }
+export function validation(payload, meta, msg = 'Validation') {
+  return new AppError(payload, meta, msg, 400, 'VALIDATION')
+}
 
+// 500
+
+export function internal(payload, meta, msg = 'Internal') {
+  return new AppError(payload, meta, msg, 500, 'INTERNAL')
+}
+
+export function notImplemented(payload, meta, msg = 'Not implemented') {
+  return new AppError(payload, meta, msg, 501, 'NOT_IMPLEMENTED')
+}
+
+export function unavailable(payload, meta, msg = 'Unavailable') {
+  return new AppError(payload, meta, msg, 503, 'UNAVAILABLE')
+}
+
+export function invalidArguments(payload, meta, msg = 'Invalid arguments') {
+  return new AppError(payload, meta, msg, 500, 'INVALID_ARGUMENTS')
 }

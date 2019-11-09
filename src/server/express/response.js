@@ -1,23 +1,32 @@
 import { response } from 'express'
-import HttpError from '../error'
+import { AppError } from '../error'
 
 if (response.jsonError)
   throw new Error('Can\'t bind jsonError to response')
 
-response.jsonError = function () {
-  return new HttpError(this)
+response.jsonError = function (error) {
+  if (!(error instanceof AppError)) {
+    error = new AppError(
+      error.payload || error.defaults,
+      error.meta,
+      error.message,
+      error.status,
+      error.code
+    )
+  }
+  error.send(this)
 }
 
 if (response.jsonSuccess)
   throw new Error('Can\'t bind jsonSuccess to response')
 
-response.jsonSuccess = function (payload, opt) {
+response.jsonSuccess = function (payload, options) {
   this.status(200)
     .json({
       success: {
-        code: (opt && opt.code) || 'OK'
+        code: (options && options.code) || 'OK'
       },
-      meta: opt && opt.meta,
+      meta: options && options.meta,
       payload
     })
 }
