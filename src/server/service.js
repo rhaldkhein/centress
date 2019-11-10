@@ -2,12 +2,11 @@ import express from 'express'
 import http, { IncomingMessage } from 'http'
 import _defaultsDeep from 'lodash.defaultsdeep'
 import debug from 'debug'
-import { AppError } from './error'
+import { AppError, notFound, internal } from './error'
 
 import './express/express'
 import './express/response'
 
-const prod = process.env.NODE_ENV === 'production'
 const debugServer = debug('excore:server')
 const debugRouter = debug('excore:router')
 
@@ -62,7 +61,7 @@ export default class Server {
 
     // Last middleware
     this.appApi.use((req, res) => {
-      res.jsonError().notFound('Route not found')
+      res.jsonError(notFound('Route not found'))
     })
 
     // Catch and flush error for API
@@ -71,7 +70,7 @@ export default class Server {
       if (err instanceof AppError) {
         return err.send(res)
       }
-      res.jsonError().internal(prod ? null : err.message)
+      res.jsonError(internal())
       debugServer('error', err)
     })
 
