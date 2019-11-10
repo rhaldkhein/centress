@@ -14,6 +14,8 @@ const debugRouter = debug('excore:router')
 export default class Server {
   static service = '@server'
 
+  configure = null
+
   config = {}
   defaults = {
     apiBaseUrl: '/api',
@@ -24,7 +26,6 @@ export default class Server {
     this.core = provider.service('core')
     // Create app instances
     this.appRoot = express()
-    this.http = http.Server(this.appRoot)
     this.appApi = express()
     // Attach provider to apps
     this.appRoot.$provider = provider
@@ -44,9 +45,14 @@ export default class Server {
     debugServer('created')
   }
 
-  // Invoked after configure
   listen() {
     debugServer('starting http')
+
+    if (!this.http)
+      this.http = http.createServer(null, this.appRoot)
+
+    // Run configuration for app
+    if (this.configure) this.configure(this.appRoot)
 
     // Infuse di container to request
     this.appRoot.use(this.core.init(IncomingMessage.prototype))
@@ -69,18 +75,35 @@ export default class Server {
       debugServer('error', err)
     })
 
+    const httpPort = this.config.port
+    const httpsPort = this.config.portSecure || parseInt(httpPort) + 1
+
     const listenServer = () => {
       return new Promise((resolve, reject) => {
-        const port = this.config.port
-        this.http.listen(port, err => {
+        this.http.listen(httpPort, err => {
           if (err) return reject(err)
-          debugServer('started at port %d', port)
+          debugServer('started http at port %d', httpPort)
           resolve()
         })
       })
     }
 
-    return Promise.resolve().then(listenServer)
+    const listenServerSecure = () => {
+      return new Promise((resolve, reject) => {
+        this.https.listen(httpsPort, err => {
+          if (err) return reject(err)
+          debugServer('started https at port %d', httpsPort)
+          resolve()
+        })
+      })
+    }
+
+    return Promise.resolve()
+      .then(listenServer)
+      .then(() => {
+        if (this.https)
+          return listenServerSecure()
+      })
   }
 
 }
