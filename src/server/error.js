@@ -30,48 +30,48 @@ export class AppError extends Error {
 
 // 400
 
-export function badRequest(payload, meta, msg = 'Bad request') {
+export function badRequest(msg = 'Bad request', payload, meta) {
   return new AppError(payload, meta, msg, 400, 'BAD_REQUEST')
 }
 
-export function unauthorized(payload, meta, msg = 'Not authorized') {
+export function unauthorized(msg = 'Not authorized', payload, meta) {
   return new AppError(payload, meta, msg, 401, 'UNAUTHORIZED')
 }
 
-export function forbidden(payload, meta, msg = 'Not allowed') {
+export function forbidden(msg = 'Not allowed', payload, meta) {
   return new AppError(payload, meta, msg, 403, 'FORBIDDEN')
 }
 
-export function notFound(payload, meta, msg = 'Not found') {
+export function notFound(msg = 'Not found', payload, meta) {
   return new AppError(payload, meta, msg, 404, 'NOT_FOUND')
 }
 
-export function conflict(payload, meta, msg = 'Conflict') {
+export function conflict(msg = 'Conflict', payload, meta) {
   return new AppError(payload, meta, msg, 409, 'CONFLICT')
 }
 
-export function alreadyExists(payload, meta, msg = 'Already exists') {
+export function alreadyExists(msg = 'Already exists', payload, meta) {
   return conflict(payload, meta, msg)
 }
 
-export function validation(payload, meta, msg = 'Validation') {
+export function validation(msg = 'Validation', payload, meta) {
   return new AppError(payload, meta, msg, 400, 'VALIDATION')
 }
 
 // 500
 
-export function internal(payload, meta, msg = 'Internal') {
+export function internal(msg = 'Internal', payload, meta) {
   return new AppError(payload, meta, msg, 500, 'INTERNAL')
 }
 
-export function notImplemented(payload, meta, msg = 'Not implemented') {
+export function notImplemented(msg = 'Not implemented', payload, meta) {
   return new AppError(payload, meta, msg, 501, 'NOT_IMPLEMENTED')
 }
 
-export function unavailable(payload, meta, msg = 'Unavailable') {
+export function unavailable(msg = 'Unavailable', payload, meta) {
   return new AppError(payload, meta, msg, 503, 'UNAVAILABLE')
 }
 
-export function invalidArguments(payload, meta, msg = 'Invalid arguments') {
+export function invalidArguments(msg = 'Invalid arguments', payload, meta) {
   return new AppError(payload, meta, msg, 500, 'INVALID_ARGUMENTS')
 }

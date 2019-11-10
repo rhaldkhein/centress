@@ -8,5 +8,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 var app = (0, _index["default"])();
 app.configure(_startup.configureServices, _startup.configureApplication).on('start', function (prov) {
-  prov.get('@server').listen();
+  var server = prov.get('@server');
+  server.listen();
 }).start();

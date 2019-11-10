@@ -7,5 +7,6 @@ app.configure(
   configureServices,
   configureApplication
 ).on('start', prov => {
-  prov.get('@server').listen()
+  const server = prov.get('@server')
+  server.listen()
 }).start()
