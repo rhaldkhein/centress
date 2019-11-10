@@ -2,7 +2,7 @@ import express from 'express'
 import http, { IncomingMessage } from 'http'
 import _defaultsDeep from 'lodash.defaultsdeep'
 import debug from 'debug'
-import { AppError, notFound, internal } from './error'
+import { AppError, notFound } from './error'
 
 import './express/express'
 import './express/response'
@@ -70,7 +70,7 @@ export default class Server {
       if (err instanceof AppError) {
         return err.send(res)
       }
-      res.jsonError(internal())
+      res.jsonError(err)
       debugServer('error', err)
     })
 
