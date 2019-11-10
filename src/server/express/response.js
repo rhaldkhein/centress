@@ -5,6 +5,7 @@ if (response.jsonError)
   throw new Error('Can\'t bind jsonError to response')
 
 response.jsonError = function (error) {
+  if (!error) error = new AppError()
   if (!(error instanceof AppError)) {
     error = new AppError(
       error.payload || error.details,

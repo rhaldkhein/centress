@@ -5,7 +5,7 @@ export class AppError extends Error {
   constructor(
     payload,
     meta,
-    message = 'Something went wrong',
+    message = 'Internal',
     status = 500,
     code = 'INTERNAL') {
     super(message)
