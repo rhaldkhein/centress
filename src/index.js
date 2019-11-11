@@ -12,19 +12,16 @@ import Authentication from './authentication/service'
 class Builder extends BaseBuilder {
 
   path = null
-  configService = null
+  configureApp = null
 
-  configure(configureServices, configure) {
+  configure(configureServices, configureApp) {
     this.path = path.dirname(callsite()[1].getFileName())
     // Adding built-in services
     this._configureDefaultServices(this.collection)
     // Run registry after all built-in services have been added
     super.build(configureServices)
-    // Initialize server
-    const serverService = this.provider.service('@server')
-    // Configure server
-    if (typeof configure === 'function')
-      serverService.configure = configure
+    // Save configure application function
+    this.configureApp = configureApp
     return this
   }
 

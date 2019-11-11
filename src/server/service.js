@@ -13,8 +13,6 @@ const debugRouter = debug('excore:router')
 export default class Server {
   static service = '@server'
 
-  configure = null
-
   config = {}
   defaults = {
     apiBaseUrl: '/api',
@@ -51,7 +49,7 @@ export default class Server {
       this.http = http.createServer(null, this.appRoot)
 
     // Run configuration for app
-    if (this.configure) this.configure(this.appRoot)
+    if (this.core.configureApp) this.core.configureApp(this.appRoot)
 
     // Infuse di container to request
     this.appRoot.use(this.core.init(IncomingMessage.prototype))
