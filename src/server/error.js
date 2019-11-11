@@ -51,7 +51,7 @@ export function conflict(msg = 'Conflict', payload, meta) {
 }
 
 export function alreadyExists(msg = 'Already exists', payload, meta) {
-  return conflict(payload, meta, msg)
+  return conflict(msg, payload, meta)
 }
 
 export function validation(msg = 'Validation', payload, meta) {
