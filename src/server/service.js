@@ -49,7 +49,7 @@ export default class Server {
       this.http = http.createServer(null, this.appRoot)
 
     // Run configuration for app
-    if (this.core.configureApp) this.core.configureApp(this.appRoot)
+    if (this.core.configureApp) this.core.configureApp(this.appRoot, this.core.provider)
 
     // Infuse di container to request
     this.appRoot.use(this.core.init(IncomingMessage.prototype))
