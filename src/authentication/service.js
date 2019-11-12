@@ -29,22 +29,21 @@ export default class Authentication {
     // Do not use authorize, return a noop middleware
     if (!this.isInit) return (q, s, n) => n()
     // Resolving arguments
-    if (typeof strategy === 'object') {
-      callback = options
-      options = strategy
-      strategy = null
-    }
     let auth = null
     // Check from authorize list
     if (!isEmpty(this.authorizeList))
       auth = this.authorizeList[strategy || this.defaultAuthorize]
     // Auth from list or fallback to passport
-    if (auth)
+    if (auth) {
+      if (typeof auth[0] === 'function') return auth[0](passport)
+      return passport.authenticate(auth[0], auth[1], auth[2])
+    } else {
       return passport.authenticate(
-        auth[0], auth[1], auth[2])
-    else
-      return passport.authenticate(
-        strategy || this.defaultAuthorize, options, callback)
+        strategy || this.defaultAuthorize,
+        options,
+        callback
+      )
+    }
   }
 
   /**
