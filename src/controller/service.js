@@ -52,21 +52,22 @@ export default class Controller {
     }
   }
 
+  _addAuth(mw, des) {
+    if (des.authMethod) {
+      if (des.authMethod[0] !== false)
+        mw.push(this.auth.authorize(
+          des.authMethod[0], des.authMethod[1], des.authMethod[2]))
+    } else if (des.auth) {
+      mw.push(this.auth.authorize(
+        des.auth[0], des.auth[1], des.auth[2]))
+    }
+  }
+
   _addMethod(router, des, ctrl) {
     if (!ctrl) return
     if (ctrl === this.options.default) ctrl = ''
     let mw = [] // middlewares
-    // Add authentication
-    if (des.auth) {
-      if (des.authMethod) {
-        if (des.authMethod[0] !== false)
-          mw.push(this.auth.authorize(
-            des.authMethod[0], des.authMethod[1], des.authMethod[2]))
-      } else {
-        mw.push(this.auth.authorize(des.auth[0],
-          des.auth[1], des.auth[2]))
-      }
-    }
+    this._addAuth(mw, des)
     // Append middlewares
     if (des.middleware) mw = mw.concat(des.middleware)
     // Add middlewares
