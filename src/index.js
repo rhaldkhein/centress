@@ -12,15 +12,13 @@ import Authentication from './authentication/service'
 class Builder extends BaseBuilder {
 
   path = null
+  configureServices = null
   configureApp = null
 
   configure(configureServices, configureApp) {
     this.path = path.dirname(callsite()[1].getFileName())
-    // Adding built-in services
-    this._configureDefaultServices(this.collection)
-    // Run registry after all built-in services have been added
-    super.build(configureServices)
-    // Save configure application function
+    // Save configures
+    this.configureServices = configureServices
     this.configureApp = configureApp
     return this
   }
@@ -33,6 +31,14 @@ class Builder extends BaseBuilder {
     services.configure(Server, provider => {
       return provider.service('@config').get('server')
     })
+  }
+
+  start() {
+    // Adding built-in services
+    this._configureDefaultServices(this.collection)
+    // Run registry after all built-in services have been added
+    super.build(this.configureServices)
+    return super.start()
   }
 
 }
