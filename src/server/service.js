@@ -48,30 +48,6 @@ export default class Server {
     if (!this.http)
       this.http = http.createServer(null, this.appRoot)
 
-    // Run configuration for app
-    if (this.core.configureApp) this.core.configureApp(this.appRoot, this.core.provider)
-
-    // Infuse di container to request
-    this.appRoot.use(this.core.init(IncomingMessage.prototype))
-
-    // Attach primary routers
-    this.appRoot.use(this.config.apiBaseUrl, this.appApi)
-
-    // Last middleware
-    this.appApi.use((req, res) => {
-      res.jsonError(notFound('Route not found'))
-    })
-
-    // Catch and flush error for API
-    // eslint-disable-next-line no-unused-vars
-    this.appApi.use((err, req, res, next) => {
-      if (err instanceof AppError) {
-        return err.send(res)
-      }
-      res.jsonError(err)
-      debugServer('error', err)
-    })
-
     const httpPort = this.config.port
     const httpsPort = this.config.portSecure || parseInt(httpPort) + 1
 
@@ -95,12 +71,39 @@ export default class Server {
       })
     }
 
-    return Promise.resolve()
-      .then(listenServer)
-      .then(() => {
-        if (this.https)
-          return listenServerSecure()
+    // Infuse di container to request
+    this.appRoot.use(this.core.init(IncomingMessage.prototype))
+
+    // Run configuration for app
+    return this.core.configureApp(this.appRoot, this.core.provider).then(() => {
+
+      // Attach primary routers
+      this.appRoot.use(this.config.apiBaseUrl, this.appApi)
+
+      // Last middleware
+      this.appApi.use((req, res) => {
+        res.jsonError(notFound('Route not found'))
       })
+
+      // Catch and flush error for API
+      // eslint-disable-next-line no-unused-vars
+      this.appApi.use((err, req, res, next) => {
+        if (err instanceof AppError) {
+          return err.send(res)
+        }
+        res.jsonError(err)
+        debugServer('error', err)
+      })
+
+      return Promise.resolve()
+        .then(listenServer)
+        .then(() => {
+          if (this.https)
+            return listenServerSecure()
+        })
+
+    })
+
   }
 
 }
