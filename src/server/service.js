@@ -71,11 +71,7 @@ export default class Server {
       })
     }
 
-    // Infuse di container to request
-    this.appRoot.use(this.core.init(IncomingMessage.prototype))
-
-    // Run configuration for app
-    return this.core.configureApp(this.appRoot, this.core.provider).then(() => {
+    const runServer = () => {
 
       // Attach primary routers
       this.appRoot.use(this.config.apiBaseUrl, this.appApi)
@@ -102,7 +98,15 @@ export default class Server {
             return listenServerSecure()
         })
 
-    })
+    }
+
+    // Infuse di container to request
+    this.appRoot.use(this.core.init(IncomingMessage.prototype))
+
+    // Run configuration for app
+    const result = this.core.configureApp(this.appRoot, this.core.provider)
+    if (result) result.then(runServer)
+    else runServer()
 
   }
 
