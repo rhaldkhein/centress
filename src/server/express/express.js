@@ -36,3 +36,8 @@ app.useApi = function (config) {
   const serverService = this.$provider.service('@server')
   config(serverService.appApi)
 }
+
+app.useApiRoutes = function () {
+  const serverService = this.$provider.service('@server')
+  serverService.attachApiRoutes()
+}

@@ -31,7 +31,6 @@ export default class Server {
     this.config = _defaultsDeep({},
       typeof options === 'function' ? options(this) : options,
       this.defaults)
-
     // First middleware. Attach scoped provider.
     this.appRoot.use((req, res, next) => {
       debugRouter(req.method + ' ' + req.url)
@@ -42,6 +41,24 @@ export default class Server {
     debugServer('created')
   }
 
+  attachApiRoutes() {
+    // Attach primary routers
+    this.appRoot.use(this.config.apiBaseUrl, this.appApi)
+    // Last middleware for API
+    this.appApi.use((req, res) => {
+      res.jsonError(notFound('Route not found'))
+    })
+    // Catch and flush error for API
+    // eslint-disable-next-line no-unused-vars
+    this.appApi.use((err, req, res, next) => {
+      if (err instanceof AppError) {
+        return err.send(res)
+      }
+      res.jsonError(err)
+      debugServer('error', err)
+    })
+  }
+
   listen() {
     debugServer('starting http')
 
@@ -50,6 +67,9 @@ export default class Server {
 
     const httpPort = this.config.port
     const httpsPort = this.config.portSecure || parseInt(httpPort) + 1
+
+    // Infuse di container to request
+    this.appRoot.use(this.core.init(IncomingMessage.prototype))
 
     const listenServer = () => {
       return new Promise((resolve, reject) => {
@@ -72,36 +92,13 @@ export default class Server {
     }
 
     const runServer = () => {
-
-      // Attach primary routers
-      this.appRoot.use(this.config.apiBaseUrl, this.appApi)
-
-      // Last middleware
-      this.appApi.use((req, res) => {
-        res.jsonError(notFound('Route not found'))
-      })
-
-      // Catch and flush error for API
-      // eslint-disable-next-line no-unused-vars
-      this.appApi.use((err, req, res, next) => {
-        if (err instanceof AppError) {
-          return err.send(res)
-        }
-        res.jsonError(err)
-        debugServer('error', err)
-      })
-
       return Promise.resolve()
         .then(listenServer)
         .then(() => {
           if (this.https)
             return listenServerSecure()
         })
-
     }
-
-    // Infuse di container to request
-    this.appRoot.use(this.core.init(IncomingMessage.prototype))
 
     // Run configuration for app
     const result = this.core.configureApp(this.appRoot, this.core.provider)
