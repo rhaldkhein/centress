@@ -1,13 +1,12 @@
 import express, { application as app } from 'express'
 import debug from 'debug'
-
 const debugServer = debug('excore:server')
 
 if (
-  app.useServiceRoutes
-  || app.useApi
-)
-  throw new Error('Not compatible with express')
+  'useApi' in app ||
+  'useApiRoutes' in app ||
+  'useServiceRoutes' in app
+) throw new Error('Not compatible with express')
 
 app.useServiceRoutes = function () {
   debugServer('using service routes')

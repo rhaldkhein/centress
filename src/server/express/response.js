@@ -2,8 +2,10 @@ import { response } from 'express'
 import { AppError } from '../error'
 const prod = process.env.NODE_ENV === 'production'
 
-if (response.jsonError)
-  throw new Error('Can\'t bind jsonError to response')
+if (
+  'jsonError' in response ||
+  'jsonSuccess' in response
+) throw new Error('Not compatible with express')
 
 response.jsonError = function (error) {
   if (!error) error = new AppError()
@@ -18,9 +20,6 @@ response.jsonError = function (error) {
   }
   error.send(this)
 }
-
-if (response.jsonSuccess)
-  throw new Error('Can\'t bind jsonSuccess to response')
 
 response.jsonSuccess = function (payload, options) {
   this.status(200)

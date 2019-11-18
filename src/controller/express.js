@@ -1,6 +1,6 @@
 import { application as app } from 'express'
 
-if (app.useControllers)
+if ('useControllers' in app)
   throw new Error('Not compatible with express')
 
 app.useControllers = function (options) {
