@@ -1,13 +1,12 @@
 import express, { application as app } from 'express'
 import debug from 'debug'
-
 const debugServer = debug('excore:server')
 
 if (
-  app.useServiceRoutes
-  || app.useApi
-)
-  throw new Error('Not compatible with express')
+  'useApi' in app ||
+  'useApiRoutes' in app ||
+  'useServiceRoutes' in app
+) throw new Error('Not compatible with express')
 
 app.useServiceRoutes = function () {
   debugServer('using service routes')
@@ -15,17 +14,18 @@ app.useServiceRoutes = function () {
   const collection = this.$provider.service('core').collection
   const services = collection.services
   services.forEach(service => {
-    if (service.type === collection.types.SINGLETON) {
+    const { name, type } = service
+    if (type === collection.types.SINGLETON) {
       const { value } = service
       let baseUrl = value.baseUrl || '/' + service.name
       if (value.api) {
         let appApi = express.Router()
-        value.api(appApi)
+        value.api(appApi, this.$provider, { name })
         serverService.appApi.use(baseUrl, appApi)
       }
       if (value.page) {
         let pageRouter = express.Router()
-        value.page(pageRouter)
+        value.page(pageRouter, this.$provider, { name })
         serverService.appRoot.use(baseUrl, pageRouter)
       }
     }

@@ -1,6 +1,6 @@
 import { application as app } from 'express'
 
-if (app.useAuthentication)
+if ('useAuthentication' in app)
   throw new Error('Not compatible with express')
 
 app.useAuthentication = function (config) {
