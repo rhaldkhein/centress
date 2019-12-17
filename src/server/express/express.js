@@ -23,8 +23,7 @@ app.useServiceRoutes = function (options = {}) {
   const excludes = options.excludes || []
   let promises = []
   for (let i = 0; i < services.length; i++) {
-    const service = services[i]
-    const { name, type, value } = service
+    const { name, type, value } = services[i]
     if (type === collection.types.SINGLETON) {
       // Exclude specified services
       if (excludes.indexOf(name) > -1) continue
