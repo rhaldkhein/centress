@@ -11,7 +11,7 @@ if (
 function applyRouter(baseRouter, targetFn, baseUrl, provider, name) {
   const router = express.Router()
   const res = targetFn(router, provider, { name })
-  if (res.then) return res.then(() => baseRouter.use(baseUrl, router))
+  if (res && res.then) return res.then(() => baseRouter.use(baseUrl, router))
   baseRouter.use(baseUrl, router)
   return Promise.resolve()
 }
