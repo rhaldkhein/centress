@@ -20,14 +20,18 @@ app.useServiceRoutes = function (options = {}) {
   debugServer('using service routes')
   const serverService = this.$provider.service('@server')
   const collection = this.$provider.service('core').collection
-  const services = collection.services
-  const excludes = options.excludes || []
+  // Apply filters
+  const { includes, excludes } = options
+  let { services } = collection
+  if (includes)
+    services = services.filter(s => includes.indexOf(s.name) > -1)
+  if (excludes)
+    services = services.filter(s => !(excludes.indexOf(s.name) > -1))
+  // Start applying router
   let promises = []
   for (let i = 0; i < services.length; i++) {
     const { name, type, value } = services[i]
     if (type === collection.types.SINGLETON) {
-      // Exclude specified services
-      if (excludes.indexOf(name) > -1) continue
       // Apply routers to services
       const baseUrl = value.baseUrl || '/' + name
       const prom = Promise.resolve(value)
