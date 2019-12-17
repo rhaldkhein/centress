@@ -14,17 +14,18 @@ app.useServiceRoutes = function () {
   const collection = this.$provider.service('core').collection
   const services = collection.services
   services.forEach(service => {
-    if (service.type === collection.types.SINGLETON) {
+    const { name, type } = service
+    if (type === collection.types.SINGLETON) {
       const { value } = service
       let baseUrl = value.baseUrl || '/' + service.name
       if (value.api) {
         let appApi = express.Router()
-        value.api(appApi)
+        value.api(appApi, this.$provider, { name })
         serverService.appApi.use(baseUrl, appApi)
       }
       if (value.page) {
         let pageRouter = express.Router()
-        value.page(pageRouter)
+        value.page(pageRouter, this.$provider, { name })
         serverService.appRoot.use(baseUrl, pageRouter)
       }
     }
