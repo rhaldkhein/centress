@@ -48,6 +48,7 @@ function core() {
 }
 
 Object.assign(core, {
+  Container: BaseBuilder,
   // Functions
   express,
   // Services
