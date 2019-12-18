@@ -102,9 +102,8 @@ export default class Server {
 
     // Run configuration for app
     const result = this.core.configureApp(this.appRoot, this.core.provider)
-    if (result) result.then(runServer)
+    if (result) return result.then(runServer)
     else runServer()
-
   }
 
 }
